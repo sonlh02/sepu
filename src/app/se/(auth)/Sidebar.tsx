@@ -1,7 +1,7 @@
-"use client";
+"use client"
 
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
 import {
   Home,
   Activity,
@@ -16,77 +16,105 @@ import {
   Pin,
   Ratio,
   AlertCircle,
-} from "lucide-react";
-import { deleteCookie, getCookie } from "cookies-next";
-import { useRouter } from "next/navigation";
-import { Nav } from "@/lib/nav";
-import { useEffect, useState } from "react";
-import { fetchWithToken } from "@/lib/fetch_data";
-import { SE } from "@/lib/api";
-import { ProfileData, ProfileRawData } from "./profile/profile_data";
-import { Gender } from "@/enum/gender";
-import { toast } from "react-toastify";
+  User,
+  Briefcase,
+  Settings,
+  Laptop,
+  Plane,
+} from "lucide-react"
+import { deleteCookie, getCookie } from "cookies-next"
+import { useRouter } from "next/navigation"
+import { Nav } from "@/lib/nav"
+import { useEffect, useState } from "react"
+import { fetchWithToken } from "@/lib/fetch_data"
+import { SE } from "@/lib/api"
+import { ProfileData, ProfileRawData } from "./profile/profile_data"
+import { Gender } from "@/enum/gender"
+import { toast } from "react-toastify"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
+} from "@/components/ui/tooltip"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { cn } from "@/lib/utils"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 
 const sidebarItems = [
-  { icon: Home, label: "Trang chủ", link: Nav.DASHBOARD_PAGE },
-  { icon: Activity, label: "Giám sát", link: Nav.SUPERVISE_PAGE },
+  { icon: Home, label: "Trang chủ", link: Nav.DASHBOARD_PAGE, wright: "dashboard" },
+  { icon: Activity, label: "Giám sát", link: Nav.SUPERVISE_PAGE, wright: "map" },
   {
     icon: BarChart2,
     label: "Thống kê",
+    wright: "statistic",
     subItems: [
       { label: "Thống kê chung", link: Nav.STATISTIC_PAGE },
       { label: "Thống kê phiếu công việc", link: Nav.STATISTIC_REPORT_DOC_PAGE },
       { label: "Thống kê tiến độ", link: Nav.STATISTIC_REPORT_WORKPROGRESS_PAGE },
     ],
   },
-  { icon: Map, label: "Tuyến", link: Nav.ROUTE_PAGE },
-  { icon: Inspect, label: "Kiểm tra", link: Nav.INSPECTDOC_PAGE },
-  { icon: Pin, label: "Sửa chữa", link: Nav.REPAIRDOC_PAGE },
+  { icon: Map, label: "Tuyến", link: Nav.ROUTE_PAGE, wright: "route" },
+  { icon: Inspect, label: "Kiểm tra", link: Nav.INSPECTDOC_PAGE, wright: "inspectdoc" },
+  { icon: Pin, label: "Sửa chữa", link: Nav.REPAIRDOC_PAGE, wright: "repairdoc" },
   {
     icon: Ratio,
     label: "Thiết bị",
+    wright: ["workstation", "flycam"],
     subItems: [
-      { label: "Quản lý máy trạm", link: Nav.WORKSTATION_PAGE },
-      { label: "Quản lý thiết bị bay", link: Nav.UAV_PAGE },
+      { label: "Quản lý máy trạm", link: Nav.WORKSTATION_PAGE, wright: "workstation" },
+      { label: "Quản lý thiết bị bay", link: Nav.UAV_PAGE, wright: "flycam" },
     ],
   },
-  { icon: AlertCircle, label: "Cảnh báo", link: Nav.INCIDENTFLY_PAGE },
+  {
+    icon: AlertCircle,
+    label: "Cảnh báo",
+    wright: ["incident", "incidentfly"],
+    subItems: [
+      { label: "Danh sách cảnh báo bay", link: Nav.INCIDENTFLY_PAGE, wright: "incidentfly" },
+    ],
+  },
   {
     icon: Users,
     label: "Người dùng",
+    wright: ["user", "role"],
     subItems: [
-      { label: "Quản lý người dùng", link: Nav.USER_PAGE },
-      { label: "Quản lý vai trò", link: Nav.ROLE_PAGE },
+      { label: "Quản lý người dùng", link: Nav.USER_PAGE, wright: "user" },
+      { label: "Quản lý vai trò", link: Nav.ROLE_PAGE, wright: "role" },
     ],
   },
-];
+]
+
+function menuIncludes(menu: Array<string>, item: string): boolean {
+  return ["FULL", `powl-${item}`, `powl-${item}-view`].some((string) =>
+    menu.includes(string)
+  )
+}
 
 export default function Sidebar({ className }: { className?: string }) {
-  const router = useRouter();
-  const [username, setUsername] = useState<string>("");
-  const [avatar, setAvatar] = useState<string>("");
-  const [data, setData] = useState<ProfileData | null>();
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [expandedItem, setExpandedItem] = useState<string | null>(null);
+  const router = useRouter()
+  const [username, setUsername] = useState<string>("")
+  const [avatar, setAvatar] = useState<string>("")
+  const [data, setData] = useState<ProfileData | null>()
+  const [isExpanded, setIsExpanded] = useState(false)
+  const [expandedItem, setExpandedItem] = useState<string | null>(null)
+  const [menuItems, setMenuItems] = useState<Array<string>>([])
 
   useEffect(() => {
-    setUsername(getCookie("name") || "");
-    setAvatar(getCookie("avatar") || "");
-  }, []);
+    setUsername(getCookie("name") || "")
+    setAvatar(getCookie("avatar") || "")
+    setMenuItems(getCookie("menu")?.split(",") || [])
+  }, [])
 
   function fetchData() {
     fetchWithToken(SE.API_PROFILE)
       .then((response) => response as ProfileRawData)
       .then((data) => {
-        if (!data.data) return;
+        if (!data.data) return
 
         setData({
           id: data.data.user.id,
@@ -106,34 +134,39 @@ export default function Sidebar({ className }: { className?: string }) {
           safeLevel: data.data.user.lvSafe,
           avatar: data.data.user.avatar,
           signature: data.data.user.signature,
-        });
+        })
       })
       .catch((e: Error) => {
-        if (e.message) toast.error(e.message);
-      });
+        if (e.message) toast.error(e.message)
+      })
   }
 
-  useEffect(fetchData, []);
+  useEffect(fetchData, [])
 
   const handleItemClick = (label: string) => {
     if (expandedItem === label) {
-      setExpandedItem(null);
+      setExpandedItem(null)
     } else {
-      setExpandedItem(label);
+      setExpandedItem(label)
     }
-  };
+  }
 
   const handleMouseEnter = () => {
-    setIsExpanded(true);
-  };
+    setIsExpanded(true)
+  }
 
   const handleMouseLeave = () => {
-    setIsExpanded(false);
-    setExpandedItem(null); // Reset expanded item when sidebar is collapsed
-  };
+    setIsExpanded(false)
+    setExpandedItem(null)
+  }
 
   const renderMenuItem = (item: any, index: number) => {
-    const isItemExpanded = expandedItem === item.label;
+    const isItemExpanded = expandedItem === item.label
+    const hasPermission = Array.isArray(item.wright)
+      ? item.wright.some((w: string) => menuIncludes(menuItems, w))
+      : menuIncludes(menuItems, item.wright)
+
+    if (!hasPermission) return null
 
     return (
       <div key={index}>
@@ -169,21 +202,32 @@ export default function Sidebar({ className }: { className?: string }) {
         {isItemExpanded && item.subItems && (
           <div className="ml-6 mt-2 space-y-2">
             {item.subItems.map((subItem: any, subIndex: number) => (
-              <Link key={subIndex} href={subItem.link}>
-                <Button
-                  variant="ghost"
-                  className="w-full justify-start text-sm py-1"
-                >
-                  <ChevronRight className="h-4 w-4 mr-2" />
-                  {subItem.label}
-                </Button>
-              </Link>
+              menuIncludes(menuItems, subItem.wright) && (
+                <Link key={subIndex} href={subItem.link}>
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-sm py-1"
+                  >
+                    <ChevronRight className="h-4 w-4 mr-2" />
+                    {subItem.label}
+                  </Button>
+                </Link>
+              )
             ))}
           </div>
         )}
       </div>
-    );
-  };
+    )
+  }
+
+  const handleLogout = () => {
+    deleteCookie("token-type")
+    deleteCookie("refresh-token")
+    deleteCookie("access-token")
+    deleteCookie("username")
+    deleteCookie("menu")
+    router.push(Nav.LOGIN_PAGE)
+  }
 
   return (
     <aside
@@ -230,49 +274,90 @@ export default function Sidebar({ className }: { className?: string }) {
         </TooltipProvider>
       </nav>
       {isExpanded ? (
-        <div className="mt-auto p-4 flex items-center">
-          <Avatar className="h-9 w-9">
-            <AvatarImage
-              src={`${process.env.NEXT_PUBLIC_API_URL}/${avatar}`}
-              alt="User avatar"
-            />
-            <AvatarFallback>AVT</AvatarFallback>
-          </Avatar>
-          <div className="ml-3 flex-1">
-            <p className="text-sm font-medium">{username}</p>
-            <p className="text-xs text-gray-500">{data?.email}</p>
-          </div>
-          <button
-            className="text-gray-500 hover:text-gray-700"
-            type="button"
-            onClick={() => {
-              deleteCookie("token-type");
-              deleteCookie("refresh-token");
-              deleteCookie("access-token");
-              deleteCookie("username");
-              deleteCookie("menu");
-              router.push(Nav.LOGIN_PAGE);
-            }}
-          >
-            <LogOut className="h-5 w-5" />
-          </button>
-        </div>
+        <Popover>
+          <PopoverTrigger asChild>
+            <div className="mt-auto p-4 flex items-center cursor-pointer">
+              <Avatar className="h-9 w-9">
+                <AvatarImage
+                  src={`${process.env.NEXT_PUBLIC_API_URL}/${avatar}`}
+                  alt="User avatar"
+                />
+                <AvatarFallback>AVT</AvatarFallback>
+              </Avatar>
+              <div className="ml-3 flex-1">
+                <p className="text-sm font-medium">{username}</p>
+                <p className="text-xs text-gray-500">{data?.email}</p>
+              </div>
+              <ChevronDown className="h-4 w-4 text-gray-500" />
+            </div>
+          </PopoverTrigger>
+          <PopoverContent className="w-56">
+            <div className="space-y-2">
+              <Button variant="ghost" className="w-full justify-start" asChild>
+                <Link href="/profile">
+                  <User className="mr-2 h-4 w-4" />
+                  Thông tin cá nhân
+                </Link>
+              </Button>
+              <Button variant="ghost" className="w-full justify-start" asChild>
+                <Link href="/my-work">
+                  <Briefcase className="mr-2 h-4 w-4" />
+                  Công việc của tôi
+                </Link>
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-100"
+                onClick={handleLogout}
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Đăng xuất
+              </Button>
+            </div>
+          </PopoverContent>
+        </Popover>
       ) : (
-        <button
-          className="mt-auto text-gray-500 hover:text-gray-700 text-center p-4 w-full"
-          type="button"
-          onClick={() => {
-            deleteCookie("token-type");
-            deleteCookie("refresh-token");
-            deleteCookie("access-token");
-            deleteCookie("username");
-            deleteCookie("menu");
-            router.push(Nav.LOGIN_PAGE);
-          }}
-        >
-          <LogOut className="h-5 w-5 mx-auto" />
-        </button>
+        <Popover>
+          <PopoverTrigger asChild>
+            <button
+              className="mt-auto text-gray-500 hover:text-gray-700 text-center p-4 w-full"
+              type="button"
+            >
+              <Avatar className="h-8 w-8 mx-auto">
+                <AvatarImage
+                  src={`${process.env.NEXT_PUBLIC_API_URL}/${avatar}`}
+                  alt="User avatar"
+                />
+                <AvatarFallback>AVT</AvatarFallback>
+              </Avatar>
+            </button>
+          </PopoverTrigger>
+          <PopoverContent side="right" className="w-56">
+            <div className="space-y-2">
+              <Button variant="ghost" className="w-full justify-start" asChild>
+                <Link href="/profile">
+                  <User className="mr-2 h-4 w-4" />
+                  Thông tin cá nhân
+                </Link>
+              </Button>
+              <Button variant="ghost" className="w-full justify-start" asChild>
+                <Link href="/my-work">
+                  <Briefcase className="mr-2 h-4 w-4" />
+                  Công việc của tôi
+                </Link>
+              </Button>
+              <Button
+                variant="ghost"
+                className="w-full justify-start text-red-500 hover:text-red-600 hover:bg-red-100"
+                onClick={handleLogout}
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Đăng xuất
+              </Button>
+            </div>
+          </PopoverContent>
+        </Popover>
       )}
     </aside>
-  );
+  )
 }
