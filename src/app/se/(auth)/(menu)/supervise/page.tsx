@@ -80,13 +80,13 @@ export default function Supervise() {
             value={MapMode.Supervise} 
             className={`tab data-[state=active]:bg-black data-[state=active]:text-white gap-2 text-xs w-32 h-12 ${currentMode === MapMode.Supervise ? "tab-active" : ""}`}
           >
-            Supervise
+            Giám sát
           </TabsTrigger>
           <TabsTrigger 
             value={MapMode.Uav} 
             className={`tab data-[state=active]:bg-black data-[state=active]:text-white gap-2 text-xs w-32 h-12 ${currentMode === MapMode.Uav ? "tab-active" : ""}`}
           >
-            Uav
+            Đường bay
           </TabsTrigger>
         </TabsList>
       </Tabs>

@@ -52,9 +52,10 @@ export default function StatisticReportDoc() {
   const [statisticYear, setStatisticYear] = useState<StatisticReportDocData | null>(null)
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear())
   const [statisticMonth, setStatisticMonth] = useState<StatisticReportDocData | null>(null)
-  const [selectedMonth, setSelectedMonth] = useState<string>(
-    `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, "0")}`
-  )
+  const [selectedMonth, setSelectedMonth] = useState<string>(() => {
+    const now = new Date()
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
+  })
   const [statisticDay, setStatisticDay] = useState<StatisticReportDocData | null>(null)
   const [startDate, setStartDate] = useState<string | null>(null)
   const [endDate, setEndDate] = useState<string | null>(null)
@@ -212,7 +213,7 @@ export default function StatisticReportDoc() {
                 {statType === "month" && (
                   <Select onValueChange={(value) => setSelectedMonth(value)}>
                     <SelectTrigger className="w-[180px] ml-4">
-                      <SelectValue placeholder="2024-09" />
+                      <SelectValue placeholder={selectedMonth} />
                     </SelectTrigger>
                     <SelectContent>
                       {renderMonthOptions().map((option) => (

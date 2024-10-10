@@ -211,7 +211,7 @@ export default function MapSupervise({
                     }}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select a route" />
+                      <SelectValue placeholder="Chọn tuyến" />
                     </SelectTrigger>
                     <SelectContent>
                       {Object.entries({[defaultMap.value]: defaultMap.label, ...routes}).map(([routeId, routeName]) => (

@@ -288,7 +288,14 @@ export default function InspectDocs() {
   if (userWright === UserWright.None) return <UserDontAccessPage />
 
   function search(formData: FormData) {
-    setParams(Object.fromEntries(formData))
+    const searchParams = Object.fromEntries(formData)
+    if (searchParams.status === 'all') {
+      delete searchParams.status
+    }
+    if (searchParams.type === 'all') {
+      delete searchParams.type;
+    }
+    setParams(searchParams)
   }
 
   return (

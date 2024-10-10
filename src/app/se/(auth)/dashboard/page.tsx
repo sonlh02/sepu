@@ -28,6 +28,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { RepairData } from "../(menu)/repair-docs/repair_data";
+import Link from "next/link";
+import { Nav } from "@/lib/nav";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -512,182 +514,120 @@ export default function Home() {
   }, [params, limit, currentPage]);
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex flex-col md:flex-row h-screen bg-gray-100">
       {/* Main Content */}
-      <div className="flex-1 p-8 overflow-auto">
-        <h2 className="text-2xl font-semibold mb-6">
+      <div className="flex-1 p-4 md:p-8 overflow-auto">
+        <h2 className="text-xl md:text-2xl font-semibold mb-4 md:mb-6">
           Xin chào, {data?.displayName}
         </h2>
-
-        <div className="gap-6 mb-6">
+  
+        <div className="gap-4 md:gap-6 mb-4 md:mb-6">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle className="">
-                Thống kê nổi bật năm {year}
-              </CardTitle>
-              <Button size="sm">
-                <Plus className="mr-2 h-4 w-4" /> Thêm phiếu kiểm tra mới
-              </Button>
+            <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between">
+              <CardTitle>Thống kê nổi bật năm {year}</CardTitle>
+              <div className="flex mt-4 md:mt-0">
+                <Button size="sm" className="mr-2">
+                  <Link href={Nav.INSPECTDOC_DAY_PAGE} className="flex">
+                    <Plus className="mr-2 h-4 w-4" /> Thêm phiếu kiểm tra
+                  </Link>
+                </Button>
+                <Button size="sm" className="bg-gray-300 text-black">
+                  <Link href={Nav.REPAIRDOC_NEW_PAGE} className="flex">
+                    <Plus className="mr-2 h-4 w-4" /> Thêm phiếu sửa chữa
+                  </Link>
+                </Button>
+              </div>
             </CardHeader>
-            <CardContent className="flex">
+            <CardContent className="flex flex-col lg:flex-row">
               {renderPieChart(statisticYear)}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 ml-5 text-center">
-                <StatCard
-                  title="Số lần kiểm tra"
-                  value={statisticYear?.times_inspect}
-                />
-                <StatCard
-                  title="Số lần sửa chữa"
-                  value={statisticYear?.times_repair}
-                  variant="blue"
-                />
-                <StatCard
-                  title="Số tuyến kiểm tra"
-                  value={statisticYear?.num_inspect_route}
-                  variant="purple"
-                />
-                <StatCard
-                  title="Số tuyến sửa chữa"
-                  value={statisticYear?.num_repair_route}
-                  variant="green"
-                />
-                <StatCard
-                  title="Số lỗi phát hiện khi bay"
-                  value={statisticYear?.num_incident_fly}
-                />
-                <StatCard
-                  title="Số lỗi camera phát hiện"
-                  value={statisticYear?.num_incident_cam}
-                  variant="blue"
-                />
-                <StatCard
-                  title="Tuyến gặp nhiều lỗi (phát hiện khi bay)"
-                  value={statisticYear?.route_max_incident_fly || "-"}
-                  variant="purple"
-                />
-                <StatCard
-                  title="Tuyến gặp nhiều lỗi (camera giám sát)"
-                  value={statisticYear?.route_max_incident_cam || "-"}
-                  variant="green"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 ml-0 lg:ml-5 text-center">
+                <StatCard title="Số lần kiểm tra" value={statisticYear?.times_inspect} />
+                <StatCard title="Số lần sửa chữa" value={statisticYear?.times_repair} variant="blue" />
+                <StatCard title="Số tuyến kiểm tra" value={statisticYear?.num_inspect_route} variant="purple" />
+                <StatCard title="Số tuyến sửa chữa" value={statisticYear?.num_repair_route} variant="green" />
+                <StatCard title="Số lỗi phát hiện khi bay" value={statisticYear?.num_incident_fly} />
+                <StatCard title="Số lỗi camera phát hiện" value={statisticYear?.num_incident_cam} variant="blue" />
+                <StatCard title="Tuyến gặp nhiều lỗi (phát hiện khi bay)" value={statisticYear?.route_max_incident_fly || "-"} variant="purple" />
+                <StatCard title="Tuyến gặp nhiều lỗi (camera giám sát)" value={statisticYear?.route_max_incident_cam || "-"} variant="green" />
               </div>
             </CardContent>
           </Card>
         </div>
-
+  
         <Card>
           <CardHeader>
             <CardTitle>Các phiếu công việc gần đây</CardTitle>
           </CardHeader>
           <CardContent>
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList>
+              <TabsList className="overflow-auto">
                 <TabsTrigger value="inspection">Phiếu kiểm tra</TabsTrigger>
                 <TabsTrigger value="repair">Phiếu sửa chữa</TabsTrigger>
               </TabsList>
               <TabsContent value="inspection">
                 <Table className="w-full">
                   <TableHeader>
-                    <TableRow>
+                    <TableRow className="text-center">
                       <TableHead className="text-center">ID</TableHead>
-                      <TableHead className="text-center">Loại phiếu</TableHead>
-                      <TableHead className="text-center">
-                        Ngày kiểm tra
-                      </TableHead>
+                      <TableHead className="hidden sm:table-cell text-center">Loại phiếu</TableHead>
+                      <TableHead className="text-center">Ngày kiểm tra</TableHead>
                       <TableHead className="text-center">Mã phiếu</TableHead>
-                      <TableHead className="text-center">
-                        Đội kiểm tra
-                      </TableHead>
-                      <TableHead className="text-center">PTKT</TableHead>
+                      <TableHead className="hidden lg:table-cell text-center">Đội kiểm tra</TableHead>
+                      <TableHead className="hidden sm:table-cell text-center">PTKT</TableHead>
                       <TableHead className="text-center">Trạng thái</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {inspects.slice(0, 5).map((inspect, index) => (
+                    {inspects.slice(0, 5).map((inspect) => (
                       <TableRow key={inspect.id} className="text-center">
-                        <TableCell className="font-medium">
-                          {inspect.id}
+                        <TableCell className="font-medium">{inspect.id}</TableCell>
+                        <TableCell className="hidden sm:table-cell">
+                          {inspect.type === InspectType.Day ? (
+                            <div className="text-yellow-500">Phiếu ngày</div>
+                          ) : (
+                            <div className="text-blue-950">Phiếu đêm</div>
+                          )}
                         </TableCell>
+                        <TableCell>{Moment(inspect.date).format("DD-MM-YYYY")}</TableCell>
                         <TableCell>
-                          {" "}
-                          {
-                            {
-                              [InspectType.Day]: (
-                                <div className="text-yellow-500">
-                                  Phiếu ngày
-                                </div>
-                              ),
-                              [InspectType.Night]: (
-                                <div className="text-blue-950">Phiếu đêm</div>
-                              ),
-                            }[inspect.type]
-                          }
-                        </TableCell>
-                        <TableCell>
-                          {Moment(inspect.date).format("DD-MM-YYYY")}
-                        </TableCell>
-                        <TableCell>
-                          {" "}
                           <div className="font-bold pb-1">{inspect.code}</div>
                           <div className="text-xs">
                             <span className="text-tertiary">Tuyến: </span>
-                            <span className="font-bold">
-                              {inspect.powerline.code}
-                            </span>{" "}
-                            <span>({inspect.powerline.name})</span>
+                            <span className="font-bold">{inspect.powerline.code}</span> ({inspect.powerline.name})
                           </div>
                           <div className="text-xs">
                             <span className="text-tertiary">Từ cột: </span>
-                            <span className="font-bold">
-                              {inspect.powerPoles.from.code}
-                            </span>
+                            <span className="font-bold">{inspect.powerPoles.from.code}</span>
                             <span className="text-tertiary"> đến </span>
-                            <span className="font-bold">
-                              {inspect.powerPoles.to.code}
-                            </span>
+                            <span className="font-bold">{inspect.powerPoles.to.code}</span>
                           </div>
                         </TableCell>
-                        <TableCell className="w-[138px]">
-                          {" "}
-                          {inspect.workers.map((worker, index) => (
-                            <div key={index}>- {worker.name}</div>
+                        <TableCell className="hidden lg:table-cell w-[138px]">
+                          {inspect.workers.map((worker, idx) => (
+                            <div key={idx}>- {worker.name}</div>
                           ))}
                         </TableCell>
-                        <TableCell>{inspect.inspectMethod}</TableCell>
+                        <TableCell className="hidden sm:table-cell">{inspect.inspectMethod}</TableCell>
                         <TableCell>
                           <span className="flex justify-center font-bold">
-                            {
-                              {
-                                [InspectStatus.Created]: (
-                                  <div className="">Phiếu mới</div>
-                                ),
-                                [InspectStatus.Confirmed]: (
-                                  <div className="text-slate-500">
-                                    Đã nhận phiếu
-                                  </div>
-                                ),
-                                [InspectStatus.Ready]: (
-                                  <div className="text-orange-500">
-                                    Thiết bị sẵn sàng
-                                  </div>
-                                ),
-                                [InspectStatus.Submited]: (
-                                  <div className="text-neutral-500">
-                                    Đã nộp phiếu
-                                  </div>
-                                ),
-                                [InspectStatus.Approved]: (
-                                  <div className="text-fuchsia-500">
-                                    Đang ký duyệt
-                                  </div>
-                                ),
-                                [InspectStatus.Completed]: (
-                                  <div className="text-rose-500">
-                                    Hoàn thành
-                                  </div>
-                                ),
-                              }[inspect.status]
-                            }
+                            {(() => {
+                              switch (inspect.status) {
+                                case InspectStatus.Created:
+                                  return <div className="">Phiếu mới</div>;
+                                case InspectStatus.Confirmed:
+                                  return <div className="text-slate-500">Đã nhận phiếu</div>;
+                                case InspectStatus.Ready:
+                                  return <div className="text-orange-500">Thiết bị sẵn sàng</div>;
+                                case InspectStatus.Submited:
+                                  return <div className="text-neutral-500">Đã nộp phiếu</div>;
+                                case InspectStatus.Approved:
+                                  return <div className="text-fuchsia-500">Đang ký duyệt</div>;
+                                case InspectStatus.Completed:
+                                  return <div className="text-rose-500">Hoàn thành</div>;
+                                default:
+                                  return null;
+                              }
+                            })()}
                           </span>
                         </TableCell>
                       </TableRow>
@@ -700,70 +640,47 @@ export default function Home() {
                   <TableHeader>
                     <TableRow className="text-center">
                       <TableHead className="text-center">ID</TableHead>
-                      <TableHead className="text-center">
-                        Ngày sửa chữa
-                      </TableHead>
+                      <TableHead className="text-center">Ngày sửa chữa</TableHead>
                       <TableHead className="text-center">Mã phiếu</TableHead>
-                      <TableHead className="text-center">
-                        Đội sửa chữa
-                      </TableHead>
+                      <TableHead className="hidden lg:table-cell text-center">Đội sửa chữa</TableHead>
                       <TableHead className="text-center">Trạng thái</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {repairs.slice(0, 5).map((repair, index) => (
+                    {repairs.slice(0, 5).map((repair) => (
                       <TableRow key={repair.id} className="text-center">
-                        <TableCell className="font-medium">
-                          {repair.id}
-                        </TableCell>
-                        <TableCell>
-                          {Moment(repair.date).format("DD-MM-YYYY")}
-                        </TableCell>
+                        <TableCell className="font-medium">{repair.id}</TableCell>
+                        <TableCell>{Moment(repair.date).format("DD-MM-YYYY")}</TableCell>
                         <TableCell>
                           <div className="font-bold pb-1">{repair.code}</div>
                           <div className="text-xs">
                             <span className="text-tertiary">Tuyến: </span>
-                            <span className="font-bold">
-                              {repair.powerline.code}
-                            </span>{" "}
-                            <span>({repair.powerline.name})</span>
+                            <span className="font-bold">{repair.powerline.code}</span> ({repair.powerline.name})
                           </div>
                         </TableCell>
-                        <TableCell>
-                          {" "}
-                          {repair.workers.map((worker, index) => (
-                            <div key={index}>- {worker.name}</div>
+                        <TableCell className="hidden lg:table-cell">
+                          {repair.workers.map((worker, idx) => (
+                            <div key={idx}>- {worker.name}</div>
                           ))}
                         </TableCell>
                         <TableCell>
                           <span className="flex justify-center font-bold">
-                            {
-                              {
-                                [RepairStatus.Created]: (
-                                  <div className="">Phiếu mới</div>
-                                ),
-                                [RepairStatus.Confirmed]: (
-                                  <div className="text-slate-500">
-                                    Đã nhận phiếu
-                                  </div>
-                                ),
-                                [RepairStatus.Submited]: (
-                                  <div className="text-neutral-500">
-                                    Đã nộp phiếu
-                                  </div>
-                                ),
-                                [RepairStatus.Approved]: (
-                                  <div className="text-fuchsia-500">
-                                    Đang ký duyệt
-                                  </div>
-                                ),
-                                [RepairStatus.Completed]: (
-                                  <div className="text-rose-500">
-                                    Hoàn thành
-                                  </div>
-                                ),
-                              }[repair.status]
-                            }
+                            {(() => {
+                              switch (repair.status) {
+                                case RepairStatus.Created:
+                                  return <div className="">Phiếu mới</div>;
+                                case RepairStatus.Confirmed:
+                                  return <div className="text-slate-500">Đã nhận phiếu</div>;
+                                case RepairStatus.Submited:
+                                  return <div className="text-neutral-500">Đã nộp phiếu</div>;
+                                case RepairStatus.Approved:
+                                  return <div className="text-fuchsia-500">Đang ký duyệt</div>;
+                                case RepairStatus.Completed:
+                                  return <div className="text-rose-500">Hoàn thành</div>;
+                                default:
+                                  return null;
+                              }
+                            })()}
                           </span>
                         </TableCell>
                       </TableRow>
@@ -777,6 +694,7 @@ export default function Home() {
       </div>
     </div>
   );
+  
 }
 
 type StatCardProps = {

@@ -18,9 +18,7 @@ import {
   AlertCircle,
   User,
   Briefcase,
-  Settings,
-  Laptop,
-  Plane,
+  Menu,
 } from "lucide-react"
 import { deleteCookie, getCookie } from "cookies-next"
 import { useRouter } from "next/navigation"
@@ -44,6 +42,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from "@/components/ui/sheet"
 
 const sidebarItems = [
   { icon: Home, label: "Trang chủ", link: Nav.DASHBOARD_PAGE, wright: "dashboard" },
@@ -53,9 +56,9 @@ const sidebarItems = [
     label: "Thống kê",
     wright: "statistic",
     subItems: [
-      { label: "Thống kê chung", link: Nav.STATISTIC_PAGE },
-      { label: "Thống kê phiếu công việc", link: Nav.STATISTIC_REPORT_DOC_PAGE },
-      { label: "Thống kê tiến độ", link: Nav.STATISTIC_REPORT_WORKPROGRESS_PAGE },
+      { label: "Thống kê chung", link: Nav.STATISTIC_PAGE, wright: "statistic" },
+      { label: "Thống kê phiếu công việc", link: Nav.STATISTIC_REPORT_DOC_PAGE, wright: "statistic" },
+      { label: "Thống kê tiến độ", link: Nav.STATISTIC_REPORT_WORKPROGRESS_PAGE, wright: "statistic" },
     ],
   },
   { icon: Map, label: "Tuyến", link: Nav.ROUTE_PAGE, wright: "route" },
@@ -103,11 +106,20 @@ export default function Sidebar({ className }: { className?: string }) {
   const [isExpanded, setIsExpanded] = useState(false)
   const [expandedItem, setExpandedItem] = useState<string | null>(null)
   const [menuItems, setMenuItems] = useState<Array<string>>([])
+  const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
     setUsername(getCookie("name") || "")
     setAvatar(getCookie("avatar") || "")
     setMenuItems(getCookie("menu")?.split(",") || [])
+
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
   }, [])
 
   function fetchData() {
@@ -152,12 +164,14 @@ export default function Sidebar({ className }: { className?: string }) {
   }
 
   const handleMouseEnter = () => {
-    setIsExpanded(true)
+    if (!isMobile) setIsExpanded(true)
   }
 
   const handleMouseLeave = () => {
-    setIsExpanded(false)
-    setExpandedItem(null)
+    if (!isMobile) {
+      setIsExpanded(false)
+      setExpandedItem(null)
+    }
   }
 
   const renderMenuItem = (item: any, index: number) => {
@@ -175,13 +189,13 @@ export default function Sidebar({ className }: { className?: string }) {
             variant="ghost"
             className={cn(
               "w-full justify-start mb-1",
-              isExpanded ? "px-4" : "px-0",
+              isExpanded || isMobile ? "px-4" : "px-0",
               isItemExpanded && "bg-accent"
             )}
             onClick={() => handleItemClick(item.label)}
           >
-            <item.icon className={cn("h-5 w-5", isExpanded ? "mr-2" : "mx-auto")} />
-            {isExpanded && (
+            <item.icon className={cn("h-5 w-5", (isExpanded || isMobile) ? "mr-2" : "mx-auto")} />
+            {(isExpanded || isMobile) && (
               <>
                 <span>{item.label}</span>
                 <ChevronDown className={cn("ml-auto h-4 w-4", isItemExpanded && "transform rotate-180")} />
@@ -192,10 +206,10 @@ export default function Sidebar({ className }: { className?: string }) {
           <Link href={item.link}>
             <Button
               variant="ghost"
-              className={cn("w-full justify-start mb-1", isExpanded ? "px-4" : "px-0")}
+              className={cn("w-full justify-start mb-1", (isExpanded || isMobile) ? "px-4" : "px-0")}
             >
-              <item.icon className={cn("h-5 w-5", isExpanded ? "mr-2" : "mx-auto")} />
-              {isExpanded && <span>{item.label}</span>}
+              <item.icon className={cn("h-5 w-5", (isExpanded || isMobile) ? "mr-2" : "mx-auto")} />
+              {(isExpanded || isMobile) && <span>{item.label}</span>}
             </Button>
           </Link>
         )}
@@ -229,18 +243,10 @@ export default function Sidebar({ className }: { className?: string }) {
     router.push(Nav.LOGIN_PAGE)
   }
 
-  return (
-    <aside
-      className={cn(
-        "bg-white transition-all duration-300 ease-in-out flex flex-col",
-        isExpanded ? "w-64" : "w-16",
-        className
-      )}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
+  const SidebarContent = () => (
+    <>
       <div className="p-1 flex">
-        {isExpanded ? (
+        {isExpanded || isMobile ? (
           <div className="flex items-center">
             <TowerControl className="w-8 h-8" />
             <Link
@@ -266,14 +272,14 @@ export default function Sidebar({ className }: { className?: string }) {
               <TooltipTrigger asChild>
                 {renderMenuItem(item, index)}
               </TooltipTrigger>
-              {!isExpanded && (
+              {!isExpanded && !isMobile && (
                 <TooltipContent side="right">{item.label}</TooltipContent>
               )}
             </Tooltip>
           ))}
         </TooltipProvider>
       </nav>
-      {isExpanded ? (
+      {isExpanded || isMobile ? (
         <Popover>
           <PopoverTrigger asChild>
             <div className="mt-auto p-4 flex items-center cursor-pointer">
@@ -294,13 +300,13 @@ export default function Sidebar({ className }: { className?: string }) {
           <PopoverContent className="w-56">
             <div className="space-y-2">
               <Button variant="ghost" className="w-full justify-start" asChild>
-                <Link href="/profile">
+                <Link href={Nav.PROFILE_PAGE}>
                   <User className="mr-2 h-4 w-4" />
                   Thông tin cá nhân
                 </Link>
               </Button>
               <Button variant="ghost" className="w-full justify-start" asChild>
-                <Link href="/my-work">
+                <Link href={Nav.MYTASK_PAGE}>
                   <Briefcase className="mr-2 h-4 w-4" />
                   Công việc của tôi
                 </Link>
@@ -358,6 +364,35 @@ export default function Sidebar({ className }: { className?: string }) {
           </PopoverContent>
         </Popover>
       )}
+    </>
+  )
+
+  if (isMobile) {
+    return (
+      <Sheet>
+        <SheetTrigger asChild>
+          <Button variant="ghost" size="icon" className="md:hidden">
+            <Menu />
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="left" className="w-[300px] sm:w-[400px]">
+          <SidebarContent />
+        </SheetContent>
+      </Sheet>
+    )
+  }
+
+  return (
+    <aside
+      className={cn(
+        "bg-white transition-all duration-300 ease-in-out flex flex-col",
+        isExpanded ? "w-64" : "w-16",
+        className
+      )}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
+      <SidebarContent />
     </aside>
   )
 }

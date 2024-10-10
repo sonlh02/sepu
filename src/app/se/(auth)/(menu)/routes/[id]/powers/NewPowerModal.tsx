@@ -1,20 +1,19 @@
-'use client'
+"use client"
 
-import { useState, Dispatch, SetStateAction } from "react"
+import { useState } from "react"
 import { toast } from "react-toastify"
 import { fetchWithToken } from "@/lib/fetch_data"
 import { SE } from "@/lib/api"
 import { ReferenceData } from "./page"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Card, CardContent } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { PlusCircle, X } from "lucide-react"
+import { X } from "lucide-react"
 
 export default function NewPowerModal({
   powerline,
@@ -27,7 +26,7 @@ export default function NewPowerModal({
   referenceData,
 }: {
   powerline: string
-  setIsNewModalShow: Dispatch<SetStateAction<boolean | number>>
+  setIsNewModalShow: React.Dispatch<React.SetStateAction<boolean | number>>
   fetchData: Function
   params: any
   limit: number
@@ -35,163 +34,148 @@ export default function NewPowerModal({
   crossCut: boolean
   referenceData: ReferenceData
 }) {
-  const [isOpen, setIsOpen] = useState(false)
+  const [formData, setFormData] = useState({
+    name: "",
+    code: "",
+    latitude: "",
+    longitude: "",
+    origin: "",
+    note: "",
+  })
 
-  async function create(formData: FormData) {
-    const name = formData.get("name")?.toString() || ""
-    const code = formData.get("code")?.toString() || ""
-    const latitude = Number(formData.get("latitude")?.toString() || "0")
-    const longitude = Number(formData.get("longitude")?.toString() || "0")
-    const origin = formData.get("origin")?.toString() || null
-    const note = formData.get("note")?.toString() || ""
+  const [itemStatus, setItemStatus] = useState<Record<string, { status: string; note: string }>>({})
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+  }
+
+  const handleItemStatusChange = (itemId: string, field: 'status' | 'note', value: string) => {
+    setItemStatus({
+      ...itemStatus,
+      [itemId]: { ...itemStatus[itemId], [field]: value }
+    })
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
     try {
       const response = await fetchWithToken(
         `${SE.API_ROUTE}/${powerline}/power`,
         {
           method: "POST",
           body: JSON.stringify({
-            name: name,
-            code: code,
-            latitude: latitude,
-            longitude: longitude,
-            origin: origin,
-            note: note,
-            items: Object.assign(
-              {},
-              ...Object.entries(referenceData.items).map(
-                ([itemId, _itemName]) => ({
-                  [itemId]: {
-                    status: Number(
-                      formData.get(`${itemId}Status`)?.toString() || "1"
-                    ),
-                    note: formData.get(`${itemId}Note`)?.toString() || "",
-                  },
-                })
-              )
-            ),
+            ...formData,
+            latitude: Number(formData.latitude) || 0,
+            longitude: Number(formData.longitude) || 0,
+            items: Object.entries(itemStatus).reduce((acc, [itemId, data]) => {
+              acc[itemId] = { status: Number(data.status), note: data.note }
+              return acc
+            }, {} as Record<string, { status: number; note: string }>)
           }),
         }
       )
-
       if (response.message) toast.success(response.message)
-
-      setIsOpen(false)
       setIsNewModalShow(false)
       if (crossCut) {
         fetchData(params, limit, currentPage)
       } else {
         fetchData(powerline, params, limit, currentPage)
       }
-    } catch (e: any) {
-      if (e.message) toast.error(e.message)
+    } catch (error) {
+      if (error instanceof Error) toast.error(error.message)
     }
   }
 
   return (
-    <>
-      <Dialog open={true} onOpenChange={() => setIsNewModalShow(false)}>
-        <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-hidden flex flex-col">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-center">Thêm cột mới</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={(e) => {
-            e.preventDefault()
-            create(new FormData(e.currentTarget))
-          }} className="flex-grow overflow-hidden flex flex-col">
-            <ScrollArea className="flex-grow pr-4">
-              <div className="grid gap-6 py-4">
-                <Card>
-                  <CardContent className="pt-6">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="name" className="text-sm font-medium">
-                          Tên cột <span className="text-red-500">*</span>
-                        </Label>
-                        <Input id="name" name="name" required />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="code" className="text-sm font-medium">
-                          Mã cột <span className="text-red-500">*</span>
-                        </Label>
-                        <Input id="code" name="code" required />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="latitude" className="text-sm font-medium">
-                          Vĩ độ
-                        </Label>
-                        <Input id="latitude" name="latitude" type="number" step="any" />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="longitude" className="text-sm font-medium">
-                          Kinh độ
-                        </Label>
-                        <Input id="longitude" name="longitude" type="number" step="any" />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="origin" className="text-sm font-medium">
-                          Cột nối tiếp
-                        </Label>
-                        <Input id="origin" name="origin" />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="note" className="text-sm font-medium">
-                          Ghi chú
-                        </Label>
-                        <Textarea id="note" name="note" />
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="pt-6">
-                    <Label className="text-lg font-semibold mb-4 block">Thiết bị</Label>
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="w-[200px]">Tên</TableHead>
-                          <TableHead>Trạng thái</TableHead>
-                          <TableHead>Ghi chú</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {Object.entries(referenceData.items).map(([itemId, itemName]) => (
-                          <TableRow key={itemId}>
-                            <TableCell className="font-medium">{itemName}</TableCell>
-                            <TableCell>
-                              <Select name={`${itemId}Status`} defaultValue="1">
-                                <SelectTrigger className="w-[180px]">
-                                  <SelectValue placeholder="Chọn trạng thái" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="1">Bình thường</SelectItem>
-                                  <SelectItem value="2">Cảnh báo</SelectItem>
-                                  <SelectItem value="3">Báo động</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </TableCell>
-                            <TableCell>
-                              <Input name={`${itemId}Note`} placeholder="Ghi chú" />
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
+    <Dialog open={true} onOpenChange={() => setIsNewModalShow(false)}>
+      <DialogContent className="sm:max-w-[1200px] h-[80vh] flex flex-col">
+        <DialogHeader>
+          <DialogTitle className="text-center text-2xl font-bold">Thêm cột</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="flex-1 overflow-hidden flex flex-col">
+          <div className="flex-1 overflow-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="name" className="text-base">
+                    Tên cột <span className="text-destructive">*</span>
+                  </Label>
+                  <Input id="name" name="name" value={formData.name} onChange={handleInputChange} required className="mt-1" />
+                </div>
+                <div>
+                  <Label htmlFor="code" className="text-base">
+                    Mã cột <span className="text-destructive">*</span>
+                  </Label>
+                  <Input id="code" name="code" value={formData.code} onChange={handleInputChange} required className="mt-1" />
+                </div>
+                <div>
+                  <Label htmlFor="latitude" className="text-base">Vĩ độ</Label>
+                  <Input id="latitude" name="latitude" type="number" step="any" value={formData.latitude} onChange={handleInputChange} className="mt-1" />
+                </div>
+                <div>
+                  <Label htmlFor="longitude" className="text-base">Kinh độ</Label>
+                  <Input id="longitude" name="longitude" type="number" step="any" value={formData.longitude} onChange={handleInputChange} className="mt-1" />
+                </div>
+                <div>
+                  <Label htmlFor="origin" className="text-base">Cột nối tiếp</Label>
+                  <Input id="origin" name="origin" value={formData.origin} onChange={handleInputChange} className="mt-1" />
+                </div>
+                <div>
+                  <Label htmlFor="note" className="text-base">Ghi chú</Label>
+                  <Textarea id="note" name="note" value={formData.note} onChange={handleInputChange} className="mt-1" />
+                </div>
               </div>
-            </ScrollArea>
-            <DialogFooter className="mt-6 gap-2 sm:gap-0">
-              <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>
-                Hủy
-              </Button>
-              <Button type="submit" className="bg-green-600 hover:bg-green-700 text-white">
-                Thêm cột
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-    </>
+              <div>
+                <Label className="text-base mb-2 block">Thiết bị</Label>
+                <ScrollArea className="h-[calc(100vh-300px)] border rounded-md">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-muted/50">
+                        <TableHead className="w-[180px]">Tên thiết bị</TableHead>
+                        <TableHead className="w-[120px]">Trạng thái</TableHead>
+                        <TableHead>Ghi chú</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {Object.entries(referenceData.items).map(([itemId, itemName]) => (
+                        <TableRow key={itemId}>
+                          <TableCell className="font-medium">{itemName}</TableCell>
+                          <TableCell>
+                            <Select 
+                              onValueChange={(value) => handleItemStatusChange(itemId, 'status', value)}
+                              value={itemStatus[itemId]?.status || "1"}
+                            >
+                              <SelectTrigger className="w-[120px]">
+                                <SelectValue placeholder="Bình thường" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="1">Bình thường</SelectItem>
+                                <SelectItem value="2">Cảnh báo</SelectItem>
+                                <SelectItem value="3">Báo động</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
+                          <TableCell>
+                            <Input
+                              placeholder="Ghi chú"
+                              value={itemStatus[itemId]?.note || ''}
+                              onChange={(e) => handleItemStatusChange(itemId, 'note', e.target.value)}
+                              className="w-52"
+                            />
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </ScrollArea>
+              </div>
+            </div>
+          </div>
+          <div className="p-6 bg-background">
+            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white">Thêm</Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
   )
 }

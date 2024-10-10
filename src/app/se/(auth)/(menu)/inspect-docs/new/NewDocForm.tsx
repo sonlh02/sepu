@@ -12,8 +12,9 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { DatePicker } from "@/components/ui/date-picker"
+import DatePicker from "react-datepicker";
 import { MultiSelect, OptionType } from "@/components/ui/multi-select"
+import SelectComponent from "react-select";
 
 import { fetchWithToken } from "@/lib/fetch_data"
 import { SE } from "@/lib/api"
@@ -25,6 +26,7 @@ import { ReferenceData, fetchReferenceData } from "../fetch_reference_data"
 import UserDontAccessPage from "@/component/NotAllow"
 import { ReferencePowerData, fetchReferencePowerData } from "../fetch_reference_power_data"
 import { SingleValue } from "react-select"
+import { CalendarIcon } from "lucide-react"
 
 type UserData = {
   phone: string;
@@ -216,6 +218,7 @@ export default function NewDocForm({ inspectType }: { inspectType: InspectType }
                   Tuyến
                 </Label>
                 <Select
+                  name="powerline"
                   onValueChange={(value) => {
                     setRoute({
                       id: value,
@@ -244,6 +247,7 @@ export default function NewDocForm({ inspectType }: { inspectType: InspectType }
                   Từ cột
                 </Label>
                 <Select 
+                  name="powerPoleFrom"
                   onValueChange={(value) => setSpower({ value, label: powerPoles[value] })} 
                   disabled={Object.keys(powerPoles).length === 0}
                   value={spower?.value || ''}
@@ -265,6 +269,7 @@ export default function NewDocForm({ inspectType }: { inspectType: InspectType }
                   Đến cột
                 </Label>
                 <Select 
+                  name="powerPoleTo"
                   onValueChange={(value) => setEpower({ value, label: powerPoles[value] })} 
                   disabled={Object.keys(powerPoles).length === 0}
                   value={epower?.value || ''}
@@ -281,21 +286,32 @@ export default function NewDocForm({ inspectType }: { inspectType: InspectType }
               </div>
             </div>
 
-            <div className="grid gap-4 lg:grid-cols-2 mt-4">
+            <div className="grid grid-cols-2 gap-6 mt-4">
               <div className="space-y-2">
-                <Label htmlFor="date">
+                <Label htmlFor="date" className="text-sm font-medium block">
                   <span className="text-destructive mr-1">*</span>
                   Ngày kiểm tra
                 </Label>
-                <DatePicker date={date} setDate={setDate} />
+                <DatePicker
+                  name="date"
+                  className="input input-bordered w-full h-10 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 pl-3"
+                  dateFormat="dd/MM/yyyy"
+                  selected={date}
+                  onChange={(date) => date && setDate(date)}
+                />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="inspectMethod">
+                <Label htmlFor="inspectMethod" className="text-sm font-medium block">
                   <span className="text-destructive mr-1">*</span>
                   Phương thức kiểm tra
                 </Label>
-                <Input id="inspectMethod" name="inspectMethod" />
+                <Input 
+                  id="inspectMethod" 
+                  name="inspectMethod" 
+                  className="w-full h-10" 
+                  placeholder="Nhập phương thức kiểm tra" 
+                />
               </div>
             </div>
 
@@ -348,33 +364,33 @@ export default function NewDocForm({ inspectType }: { inspectType: InspectType }
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="workstation">Máy trạm</Label>
-                    <MultiSelect
-                      id="workstation"
-                      options={Object.entries(referenceData.workstations || {}).map(
+                    <SelectComponent
+                      isMulti
+                      name="workstation"
+                      options={Object.entries(referenceData.workstations).map(
                         ([workstationId, workstationName]) => ({
                           value: workstationId,
                           label: workstationName,
                         })
                       )}
-                      selected={workstations}
-                      onChange={(selected) => setWorkstations(selected)}
-                      placeholder="Chọn máy trạm..."
+                      onChange={(workstations) => setWorkstations([...workstations])}
+                      placeholder="Chọn máy trạm"
                     />
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="flycam">UAV</Label>
-                    <MultiSelect
-                      id="flycam"
-                      options={Object.entries(referenceData.flycams || {}).map(
+                    <SelectComponent
+                      isMulti
+                      name="flycam"
+                      options={Object.entries(referenceData.flycams).map(
                         ([flycamId, flycamName]) => ({
                           value: flycamId,
                           label: flycamName,
                         })
                       )}
-                      selected={flycams}
-                      onChange={(selected) => setFlycams(selected)}
-                      placeholder="Chọn UAV..."
+                      onChange={(flycams) => setFlycams([...flycams])}
+                      placeholder="Chọn UAV"
                     />
                   </div>
                 </div>
