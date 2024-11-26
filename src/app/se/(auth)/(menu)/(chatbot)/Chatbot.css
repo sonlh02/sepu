@@ -1,0 +1,71 @@
+/* Position the chatbot button in the bottom-right corner */
+.chatbot-toggle-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #494b89;
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 50%;
+    font-size: 16px;
+    cursor: pointer;
+    z-index: 1000;
+  }
+  
+  .chatbot-toggle-btn:hover {
+    background-color: #494b89;
+  }
+  
+  /* Style for the chatbot window */
+  .chatbot-window {
+    position: fixed;
+    bottom: 70px; /* Just above the button */
+    right: 20px;
+    width: 300px;
+    height: 400px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    z-index: 999;
+  }
+  
+  .chatbot-window h2 {
+    font-size: 18px;
+    margin: 0;
+    padding: 5px;
+    text-align: center;
+  }
+  
+  .chatbot-window div {
+    flex-grow: 1;
+    overflow-y: auto;
+    margin-bottom: 10px;
+  }
+  
+  .chatbot-window input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .chatbot-window button {
+    background-color: #494b91;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+  }
+  
+  .chatbot-window button:hover {
+    background-color: #494b90;
+  }
+  

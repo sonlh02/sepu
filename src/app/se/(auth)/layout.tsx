@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import Script from "next/script";
 // load lib
 import menubar from "@/lib/menu";
 import { Nav } from "@/lib/nav";
@@ -16,7 +17,7 @@ import "react-datepicker/dist/react-datepicker.css";
 
 import NavBar from "./Sidebar";
 import Rightpanel from "./Rightpanel";
-import Chatbot from "./(menu)/(chatbot)/Chatbot";
+import ChatBot from "./(menu)/(chatbot)/Chatbot";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -42,8 +43,26 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
         <NavBar/>
         <div className="flex-1 overflow-y-auto">{children}</div>
         {/* <Rightpanel/> */}
-        <Chatbot/>
       </div>
+      <ChatBot/>
+      {/* Nhúng component Chatbot vào đây */}
+       {/* Đặt cấu hình chatbot */}
+       {/* <Script id="embedded-chatbot-config" strategy="lazyOnload">
+        {`
+          window.embeddedChatbotConfig = {
+            chatbotId: "LxtbOsGmWZSiOilrvLY4n",
+            domain: "www.chatbase.co"
+          };
+        `}
+      </Script> */}
+
+      {/* Tải script nhúng chatbot */}
+      {/* <Script
+        src="https://www.chatbase.co/embed.min.js"
+        defer
+        strategy="lazyOnload"
+      /> */}
+
 
       {/*<ToastContainer
         position="top-right"
