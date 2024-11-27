@@ -1,36 +1,62 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { toast } from "react-toastify"
-import Link from "next/link"
-import Moment from "moment"
-import * as XLSX from 'xlsx'
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import Link from "next/link";
+import Moment from "moment";
+import * as XLSX from "xlsx";
 
-import { fetchWithToken } from "@/lib/fetch_data"
-import { SE } from "@/lib/api"
-import menubar from "@/lib/menu"
-import { Nav } from "@/lib/nav"
+import { fetchWithToken } from "@/lib/fetch_data";
+import { SE } from "@/lib/api";
+import menubar from "@/lib/menu";
+import { Nav } from "@/lib/nav";
 
-import { UserWright } from "@/enum/user_wright"
-import { InspectStatus } from "@/enum/doc_status"
-import { InspectType } from "@/enum/inspect_type"
+import { UserWright } from "@/enum/user_wright";
+import { InspectStatus } from "@/enum/doc_status";
+import { InspectType } from "@/enum/inspect_type";
 
-import { Search, Plus, Edit, Trash2, Eye, Printer, FileSpreadsheet } from "lucide-react"
+import {
+  Search,
+  Plus,
+  Edit,
+  Trash2,
+  Eye,
+  Printer,
+  FileSpreadsheet,
+} from "lucide-react";
 
-import { InspectData } from "./inspect_data"
+import { InspectData } from "./inspect_data";
 
-import UserDontAccessPage from "@/component/NotAllow"
-import Pagination from "@/app/se/(auth)/Pagination"
-import DeleteConfirm from "@/app/se/(auth)/(menu)/_modal/DeleteConfirm"
+import UserDontAccessPage from "@/component/NotAllow";
+import Pagination from "@/app/se/(auth)/Pagination";
+import DeleteConfirm from "@/app/se/(auth)/(menu)/_modal/DeleteConfirm";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Separator } from "@/components/ui/separator"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Separator } from "@/components/ui/separator";
 
 type InspectsRawData = {
   data: {
@@ -149,14 +175,14 @@ type InspectsRawData = {
 };
 
 export default function InspectDocs() {
-  const [userWright, setUserWright] = useState<UserWright | null>(null)
-  const [deletingData, setDeletingData] = useState<InspectData | null>(null)
-  const [inspects, setInspects] = useState<Array<InspectData>>([])
+  const [userWright, setUserWright] = useState<UserWright | null>(null);
+  const [deletingData, setDeletingData] = useState<InspectData | null>(null);
+  const [inspects, setInspects] = useState<Array<InspectData>>([]);
 
-  const [params, setParams] = useState({})
-  const [total, setTotal] = useState(0)
-  const [limit, setLimit] = useState(20)
-  const [currentPage, setCurrentPage] = useState(1)
+  const [params, setParams] = useState({});
+  const [total, setTotal] = useState(0);
+  const [limit, setLimit] = useState(20);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const exportExcel = () => {
     fetchWithToken(`${SE.API_INSPECTDOCREPORT}?${new URLSearchParams(params)}`)
@@ -164,19 +190,20 @@ export default function InspectDocs() {
         const worksheet = XLSX.utils.json_to_sheet(data.data);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Phiếu kiểm tra");
-        XLSX.writeFile(workbook, `DanhSachPhieuKiemTra_${Moment(new Date()).format("DD-MM-YYYY")}.xlsx`);
+        XLSX.writeFile(
+          workbook,
+          `DanhSachPhieuKiemTra_${Moment(new Date()).format("DD-MM-YYYY")}.xlsx`
+        );
       })
       .catch((e: Error) => {
-        if(e.message) toast.error(e.message);
+        if (e.message) toast.error(e.message);
       });
-  }
+  };
 
   function fetchData(params: any, limit: number, page: number) {
     params.limit = String(limit);
     params.page = String(page);
-    fetchWithToken(
-      `${SE.API_INSPECTDOCS}?${new URLSearchParams(params)}`
-    )
+    fetchWithToken(`${SE.API_INSPECTDOCS}?${new URLSearchParams(params)}`)
       .then((response) => response as InspectsRawData)
       .then((data) => {
         if (!data.data) return;
@@ -268,44 +295,52 @@ export default function InspectDocs() {
         setTotal(data.data.total);
       })
       .catch((e: Error) => {
-        if(e.message) toast.error(e.message);
+        if (e.message) toast.error(e.message);
       });
   }
 
   useEffect(() => {
-    if(menubar("inspectdoc")) {
-      setUserWright(UserWright.Write)
-      fetchData(params, limit, currentPage)
-    } else if(menubar("inspectdoc-view")) {
-      setUserWright(UserWright.Read)
-      fetchData(params, limit, currentPage)
+    if (menubar("inspectdoc")) {
+      setUserWright(UserWright.Write);
+      fetchData(params, limit, currentPage);
+    } else if (menubar("inspectdoc-view")) {
+      setUserWright(UserWright.Read);
+      fetchData(params, limit, currentPage);
     } else {
-      setUserWright(UserWright.None)
+      setUserWright(UserWright.None);
     }
-  }, [params, limit, currentPage])
+  }, [params, limit, currentPage]);
 
-  if (!userWright) return null
-  if (userWright === UserWright.None) return <UserDontAccessPage />
+  if (!userWright) return null;
+  if (userWright === UserWright.None) return <UserDontAccessPage />;
 
   function search(formData: FormData) {
-    const searchParams = Object.fromEntries(formData)
-    if (searchParams.status === 'all') {
-      delete searchParams.status
+    const searchParams = Object.fromEntries(formData);
+    if (searchParams.status === "all") {
+      delete searchParams.status;
     }
-    if (searchParams.type === 'all') {
+    if (searchParams.type === "all") {
       delete searchParams.type;
     }
-    setParams(searchParams)
+    setParams(searchParams);
   }
 
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold">Danh sách phiếu kiểm tra</CardTitle>
+        <CardTitle className="text-2xl font-bold">
+          Danh sách phiếu kiểm tra
+        </CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={(e) => { e.preventDefault(); search(new FormData(e.currentTarget)) }} className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            search(new FormData(e.currentTarget));
+          }}
+          className="space-y-4"
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 bg-stone-200 p-2 rounded">
             <div className="space-y-2">
               <label className="text-sm font-medium">Ngày bắt đầu</label>
               <Input type="date" name="dateInspect" />
@@ -348,11 +383,14 @@ export default function InspectDocs() {
                 </SelectContent>
               </Select>
             </div>
+            <div className="space-y-2 flex flex-col items-center">
+              <label className="text-sm font-medium text-stone-200">.</label>
+              <Button type="submit" className="w-48">
+                <Search className="mr-2 h-4 w-4" />
+                Tìm kiếm
+              </Button>
+            </div>
           </div>
-          <Button type="submit">
-            <Search className="mr-2 h-4 w-4" />
-            Tìm kiếm
-          </Button>
         </form>
 
         <Separator className="my-6" />
@@ -406,60 +444,85 @@ export default function InspectDocs() {
                       Tuyến: {inspect.powerline.code} ({inspect.powerline.name})
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      Từ cột: {inspect.powerPoles.from.code} đến {inspect.powerPoles.to.code}
+                      Từ cột: {inspect.powerPoles.from.code} đến{" "}
+                      {inspect.powerPoles.to.code}
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={inspect.type === InspectType.Day ? "secondary" : "default"}>
-                      {inspect.type === InspectType.Day ? "Phiếu ngày" : "Phiếu đêm"}
+                    <Badge
+                      variant={
+                        inspect.type === InspectType.Day
+                          ? "secondary"
+                          : "default"
+                      }
+                    >
+                      {inspect.type === InspectType.Day
+                        ? "Phiếu ngày"
+                        : "Phiếu đêm"}
                     </Badge>
                   </TableCell>
-                  <TableCell>{Moment(inspect.date).format("DD-MM-YYYY")}</TableCell>
+                  <TableCell>
+                    {Moment(inspect.date).format("DD-MM-YYYY")}
+                  </TableCell>
                   <TableCell>
                     <ul className="list-disc list-inside">
                       {inspect.workers.map((worker, index) => (
-                        <li key={index} className="text-sm">{worker.name}</li>
+                        <li key={index} className="text-sm">
+                          {worker.name}
+                        </li>
                       ))}
                     </ul>
                   </TableCell>
                   <TableCell>{inspect.inspectMethod}</TableCell>
                   <TableCell>
-                  <Badge 
-                    variant={
-                      inspect.status === InspectStatus.Created ? "default" :
-                      inspect.status === InspectStatus.Confirmed ? "secondary" :
-                      inspect.status === InspectStatus.Ready ? "outline" :
-                      inspect.status === InspectStatus.Submited ? "secondary" :
-                      inspect.status === InspectStatus.Approved ? "destructive" :
-                      "default"
-                    }
-                    className={
-                      inspect.status === InspectStatus.Created ? "bg-gray-100 text-gray-800" :
-                      inspect.status === InspectStatus.Confirmed ? "bg-blue-100 text-blue-800" :
-                      inspect.status === InspectStatus.Ready ? "bg-cyan-100 text-cyan-800" :
-                      inspect.status === InspectStatus.Submited ? "bg-yellow-100 text-yellow-800" :
-                      inspect.status === InspectStatus.Approved ? "bg-red-100 text-red-800" :
-                      "bg-green-100 text-green-800"
-                    }
-                  >
-                    {
+                    <Badge
+                      variant={
+                        inspect.status === InspectStatus.Created
+                          ? "default"
+                          : inspect.status === InspectStatus.Confirmed
+                          ? "secondary"
+                          : inspect.status === InspectStatus.Ready
+                          ? "outline"
+                          : inspect.status === InspectStatus.Submited
+                          ? "secondary"
+                          : inspect.status === InspectStatus.Approved
+                          ? "destructive"
+                          : "default"
+                      }
+                      className={
+                        inspect.status === InspectStatus.Created
+                          ? "bg-gray-100 text-gray-800"
+                          : inspect.status === InspectStatus.Confirmed
+                          ? "bg-blue-100 text-blue-800"
+                          : inspect.status === InspectStatus.Ready
+                          ? "bg-cyan-100 text-cyan-800"
+                          : inspect.status === InspectStatus.Submited
+                          ? "bg-yellow-100 text-yellow-800"
+                          : inspect.status === InspectStatus.Approved
+                          ? "bg-red-100 text-red-800"
+                          : "bg-green-100 text-green-800"
+                      }
+                    >
                       {
-                        [InspectStatus.Created]: "Phiếu mới",
-                        [InspectStatus.Confirmed]: "Đã nhận phiếu",
-                        [InspectStatus.Ready]: "Thiết bị sẵn sàng",
-                        [InspectStatus.Submited]: "Đã nộp phiếu",
-                        [InspectStatus.Approved]: "Đang ký duyệt",
-                        [InspectStatus.Completed]: "Hoàn thành",
-                      }[inspect.status]
-                    }
-                  </Badge>
+                        {
+                          [InspectStatus.Created]: "Phiếu mới",
+                          [InspectStatus.Confirmed]: "Đã nhận phiếu",
+                          [InspectStatus.Ready]: "Thiết bị sẵn sàng",
+                          [InspectStatus.Submited]: "Đã nộp phiếu",
+                          [InspectStatus.Approved]: "Đang ký duyệt",
+                          [InspectStatus.Completed]: "Hoàn thành",
+                        }[inspect.status]
+                      }
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Button variant="ghost" size="icon" asChild>
-                            <Link href={`${Nav.INSPECTDOC_VIEW_PAGE}/${inspect.id}`}>
+                            <Link
+                              href={`${Nav.INSPECTDOC_VIEW_PAGE}/${inspect.id}`}
+                            >
                               <Eye className="h-4 w-4" />
                             </Link>
                           </Button>
@@ -469,15 +532,19 @@ export default function InspectDocs() {
                     </TooltipProvider>
 
                     {userWright === UserWright.Write &&
-                      [InspectStatus.Created, InspectStatus.Confirmed, InspectStatus.Ready].includes(
-                        inspect.status
-                      ) && (
+                      [
+                        InspectStatus.Created,
+                        InspectStatus.Confirmed,
+                        InspectStatus.Ready,
+                      ].includes(inspect.status) && (
                         <>
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Button variant="ghost" size="icon" asChild>
-                                  <Link href={`${Nav.INSPECTDOC_EDIT_PAGE}/${inspect.id}`}>
+                                  <Link
+                                    href={`${Nav.INSPECTDOC_EDIT_PAGE}/${inspect.id}`}
+                                  >
                                     <Edit className="h-4 w-4" />
                                   </Link>
                                 </Button>
@@ -488,7 +555,11 @@ export default function InspectDocs() {
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <Button variant="ghost" size="icon" onClick={() => setDeletingData(inspect)}>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => setDeletingData(inspect)}
+                                >
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
                               </TooltipTrigger>
@@ -503,7 +574,10 @@ export default function InspectDocs() {
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button variant="ghost" size="icon" asChild>
-                              <Link href={`${Nav.INSPECTDOC_PRINT_PAGE}/${inspect.id}`} target="_blank">
+                              <Link
+                                href={`${Nav.INSPECTDOC_PRINT_PAGE}/${inspect.id}`}
+                                target="_blank"
+                              >
                                 <Printer className="h-4 w-4" />
                               </Link>
                             </Button>
@@ -519,26 +593,28 @@ export default function InspectDocs() {
           </Table>
         </div>
 
-        <div className="flex items-center justify-between space-x-2 py-4">
-          <Select
-            value={limit.toString()}
-            onValueChange={(value) => {
-              setCurrentPage(1)
-              setLimit(Number(value))
-            }}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Số bản ghi mỗi trang" />
-            </SelectTrigger>
-            <SelectContent>
-              {[20, 50, 100].map((limitOption) => (
-                <SelectItem key={limitOption} value={limitOption.toString()}>
-                  {limitOption} bản ghi / trang
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <span className="text-sm font-medium">Số bản ghi mỗi trang:</span>
+            <Select
+              value={String(limit)}
+              onValueChange={(value) => {
+                setCurrentPage(1);
+                setLimit(Number(value));
+              }}
+            >
+              <SelectTrigger className="w-[70px]">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {[20, 50, 100].map((limitOption) => (
+                  <SelectItem key={limitOption} value={String(limitOption)}>
+                    {limitOption}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
           <Pagination
             pages={Math.ceil(total / limit)}
             currentPage={currentPage}
@@ -553,21 +629,20 @@ export default function InspectDocs() {
             title={`Xóa phiếu: ${deletingData.code}?`}
             setIsDeleteConfirmModalShow={setDeletingData}
             deleteFunction={() => {
-              fetchWithToken(
-                `${SE.API_INSPECTDOC}/${deletingData.id}`,
-                { method: "DELETE" }
-              )
+              fetchWithToken(`${SE.API_INSPECTDOC}/${deletingData.id}`, {
+                method: "DELETE",
+              })
                 .then((data) => {
-                  if (data.message) toast.success(data.message)
-                  fetchData(params, limit, currentPage)
+                  if (data.message) toast.success(data.message);
+                  fetchData(params, limit, currentPage);
                 })
                 .catch((e: Error) => {
-                  if (e.message) toast.error(e.message)
-                })
+                  if (e.message) toast.error(e.message);
+                });
             }}
           />
         )}
       </CardContent>
     </Card>
-  )
+  );
 }

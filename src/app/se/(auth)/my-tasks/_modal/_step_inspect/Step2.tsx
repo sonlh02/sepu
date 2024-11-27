@@ -13,35 +13,35 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Textarea } from "@/components/ui/textarea"
-import { PlusCircle, Copy, Trash, Maximize, Clipboard } from "lucide-react"
+import { PlusCircle, Copy, Trash, Maximize, Clipboard } from 'lucide-react'
 
 export type ReferenceRawData = {
   data: {
     powers: {
       [key: string]: {
-        id: number
-        code: string
-        name: string
-        latitude: number
-        longitude: number
-      }
-    }
+        id: number;
+        code: string;
+        name: string;
+        latitude: number;
+        longitude: number;
+      };
+    };
     power_items: {
-      [key: string]: string
-    }
-  }
-}
+      [key: string]: string;
+    };
+  };
+};
 
 export type ReferenceData = {
   powerPoles: Array<{
-    id: string
-    name: string
-  }>
+    id: string;
+    name: string;
+  }>;
   objects: Array<{
-    id: string
-    name: string
-  }>
-}
+    id: string;
+    name: string;
+  }>;
+};
 
 export function NStep2({
   className,
@@ -59,10 +59,7 @@ export function NStep2({
   setWarnings: React.Dispatch<React.SetStateAction<Array<WarningData>>>
 }) {
   const [referenceData, setReferenceData] = useState<ReferenceData | null>(null)
-
-  useEffect(() => {
-    fetchReferenceData(inspectData)
-  }, [inspectData])
+  const [imagePreviews, setImagePreviews] = useState<string[]>([])
 
   function fetchReferenceData(inspectData: InspectData) {
     fetchWithToken(
@@ -73,7 +70,7 @@ export function NStep2({
     )
       .then((response) => response as ReferenceRawData)
       .then((data) => {
-        if (!data.data) return
+        if (!data.data) return;
 
         setReferenceData({
           powerPoles: Object.entries(data.data.powers).map(
@@ -88,17 +85,34 @@ export function NStep2({
               name: objectsName,
             })
           ),
-        })
+        });
       })
       .catch((e: Error) => {
-        if (e.message) toast.error(e.message)
-      })
+        if(e.message) toast.error(e.message);
+      });
   }
+
+  useEffect(() => {
+    fetchReferenceData(inspectData)
+  }, [inspectData])
+
+  useEffect(() => {
+    // Create image previews when images change
+    const newPreviews = images.map(image => URL.createObjectURL(image))
+    setImagePreviews(newPreviews)
+
+    // Cleanup function to revoke object URLs
+    return () => {
+      newPreviews.forEach(preview => URL.revokeObjectURL(preview))
+    }
+  }, [images])
 
   function getWarningId(): number {
     while (true) {
-      const warningId = Math.random()
-      if (!warnings.some((warning) => warning.id === warningId)) return warningId
+      const warningId = Math.random();
+
+      if (!warnings.some((warning) => warning.id === warningId))
+        return warningId;
     }
   }
 
@@ -111,15 +125,15 @@ export function NStep2({
         <CardContent>
           <ScrollArea className="h-32 w-full">
             <div className="flex space-x-2 p-2">
-              {images.map((image, index) => (
+              {imagePreviews.map((preview, index) => (
                 <div
                   key={index}
                   className="relative aspect-square h-full shrink-0 overflow-hidden rounded-md"
                 >
                   <Image
                     className="object-cover"
-                    src={URL.createObjectURL(image)}
-                    alt="upload"
+                    src={preview}
+                    alt={`upload-${index}`}
                     fill
                   />
                   <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity hover:opacity-100">
@@ -128,10 +142,10 @@ export function NStep2({
                       size="icon"
                       onClick={() => {
                         if (window.isSecureContext && navigator.clipboard) {
-                          navigator.clipboard.writeText(image.name)
-                          toast.info(`Đã sao chép tên ảnh ${image.name}`)
+                          navigator.clipboard.writeText(images[index].name)
+                          toast.info(`Đã sao chép tên ảnh ${images[index].name}`)
                         } else {
-                          toast.warning(`Chưa sao chép được tên ảnh (${image.name})`)
+                          toast.warning(`Chưa sao chép được tên ảnh (${images[index].name})`)
                         }
                       }}
                     >
@@ -140,11 +154,14 @@ export function NStep2({
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() =>
+                      onClick={() => {
                         setImages((previousImages) =>
-                          previousImages.filter((file) => file !== image)
+                          previousImages.filter((_, i) => i !== index)
                         )
-                      }
+                        setImagePreviews((previousPreviews) =>
+                          previousPreviews.filter((_, i) => i !== index)
+                        )
+                      }}
                     >
                       <Trash className="h-4 w-4" />
                     </Button>
@@ -566,3 +583,4 @@ export function VStep2({
     </div>
   )
 }
+
