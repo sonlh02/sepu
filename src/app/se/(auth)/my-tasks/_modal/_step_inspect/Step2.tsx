@@ -1,19 +1,30 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { toast } from "react-toastify"
-import Image from "next/image"
-import { fetchWithToken } from "@/lib/fetch_data"
-import { SE } from "@/lib/api"
-import { InspectData, ImageData, IncidentData, WarningData } from "../../doc_data"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Textarea } from "@/components/ui/textarea"
-import { PlusCircle, Copy, Trash, Maximize, Clipboard } from 'lucide-react'
+import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import Image from "next/image";
+import { fetchWithToken } from "@/lib/fetch_data";
+import { SE } from "@/lib/api";
+import {
+  InspectData,
+  ImageData,
+  IncidentData,
+  WarningData,
+} from "../../doc_data";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Textarea } from "@/components/ui/textarea";
+import { PlusCircle, Copy, Trash, Maximize, Clipboard } from "lucide-react";
 
 export type ReferenceRawData = {
   data: {
@@ -51,15 +62,17 @@ export function NStep2({
   warnings,
   setWarnings,
 }: {
-  className?: string
-  inspectData: InspectData
-  images: Array<File>
-  setImages: React.Dispatch<React.SetStateAction<Array<File>>>
-  warnings: Array<WarningData>
-  setWarnings: React.Dispatch<React.SetStateAction<Array<WarningData>>>
+  className?: string;
+  inspectData: InspectData;
+  images: Array<File>;
+  setImages: React.Dispatch<React.SetStateAction<Array<File>>>;
+  warnings: Array<WarningData>;
+  setWarnings: React.Dispatch<React.SetStateAction<Array<WarningData>>>;
 }) {
-  const [referenceData, setReferenceData] = useState<ReferenceData | null>(null)
-  const [imagePreviews, setImagePreviews] = useState<string[]>([])
+  const [referenceData, setReferenceData] = useState<ReferenceData | null>(
+    null
+  );
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
 
   function fetchReferenceData(inspectData: InspectData) {
     fetchWithToken(
@@ -88,24 +101,24 @@ export function NStep2({
         });
       })
       .catch((e: Error) => {
-        if(e.message) toast.error(e.message);
+        if (e.message) toast.error(e.message);
       });
   }
 
   useEffect(() => {
-    fetchReferenceData(inspectData)
-  }, [inspectData])
+    fetchReferenceData(inspectData);
+  }, [inspectData]);
 
   useEffect(() => {
     // Create image previews when images change
-    const newPreviews = images.map(image => URL.createObjectURL(image))
-    setImagePreviews(newPreviews)
+    const newPreviews = images.map((image) => URL.createObjectURL(image));
+    setImagePreviews(newPreviews);
 
     // Cleanup function to revoke object URLs
     return () => {
-      newPreviews.forEach(preview => URL.revokeObjectURL(preview))
-    }
-  }, [images])
+      newPreviews.forEach((preview) => URL.revokeObjectURL(preview));
+    };
+  }, [images]);
 
   function getWarningId(): number {
     while (true) {
@@ -125,16 +138,19 @@ export function NStep2({
         <CardContent>
           <ScrollArea className="h-32 w-full">
             <div className="flex space-x-2 p-2">
-              {imagePreviews.map((preview, index) => (
+              {images.map((image, index) => (
                 <div
                   key={index}
-                  className="relative aspect-square h-full shrink-0 overflow-hidden rounded-md"
+                  className="group relative aspect-square h-full shrink-0 overflow-hidden rounded bg-base-300"
                 >
                   <Image
                     className="object-cover"
-                    src={preview}
-                    alt={`upload-${index}`}
-                    fill
+                    src={URL.createObjectURL(image)}
+                    alt="upload"
+                    width={0}
+                    height={0}
+                    sizes="100vw"
+                    style={{ width: "100px", height: "100%" }}
                   />
                   <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity hover:opacity-100">
                     <Button
@@ -142,10 +158,14 @@ export function NStep2({
                       size="icon"
                       onClick={() => {
                         if (window.isSecureContext && navigator.clipboard) {
-                          navigator.clipboard.writeText(images[index].name)
-                          toast.info(`Đã sao chép tên ảnh ${images[index].name}`)
+                          navigator.clipboard.writeText(images[index].name);
+                          toast.info(
+                            `Đã sao chép tên ảnh ${images[index].name}`
+                          );
                         } else {
-                          toast.warning(`Chưa sao chép được tên ảnh (${images[index].name})`)
+                          toast.warning(
+                            `Chưa sao chép được tên ảnh (${images[index].name})`
+                          );
                         }
                       }}
                     >
@@ -157,10 +177,10 @@ export function NStep2({
                       onClick={() => {
                         setImages((previousImages) =>
                           previousImages.filter((_, i) => i !== index)
-                        )
+                        );
                         setImagePreviews((previousPreviews) =>
                           previousPreviews.filter((_, i) => i !== index)
-                        )
+                        );
                       }}
                     >
                       <Trash className="h-4 w-4" />
@@ -183,10 +203,10 @@ export function NStep2({
                 multiple
                 accept="image/*"
                 onChange={(event) => {
-                  if (!event.target.files) return
-                  const files = Array.from(event.target.files)
-                  setImages((previousImages) => [...previousImages, ...files])
-                  event.target.value = ""
+                  if (!event.target.files) return;
+                  const files = Array.from(event.target.files);
+                  setImages((previousImages) => [...previousImages, ...files]);
+                  event.target.value = "";
                 }}
               />
             </Label>
@@ -212,7 +232,7 @@ export function NStep2({
                     onClick={() => {
                       const isWarning = warnings.filter(
                         (object) => object !== warning
-                      )
+                      );
                       setWarnings(
                         isWarning.length > 0
                           ? isWarning
@@ -228,7 +248,7 @@ export function NStep2({
                                 description: undefined,
                               },
                             ]
-                      )
+                      );
                     }}
                   >
                     <Trash className="h-4 w-4" />
@@ -253,7 +273,10 @@ export function NStep2({
                           </SelectTrigger>
                           <SelectContent>
                             {referenceData?.powerPoles.map((powerPole) => (
-                              <SelectItem key={powerPole.id} value={powerPole.id}>
+                              <SelectItem
+                                key={powerPole.id}
+                                value={powerPole.id}
+                              >
                                 {powerPole.name}
                               </SelectItem>
                             ))}
@@ -261,7 +284,9 @@ export function NStep2({
                         </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor={`object-${warning.id}`}>Đối tượng</Label>
+                        <Label htmlFor={`object-${warning.id}`}>
+                          Đối tượng
+                        </Label>
                         <Select
                           onValueChange={(value) =>
                             setWarnings(
@@ -301,7 +326,9 @@ export function NStep2({
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor={`longitude-${warning.id}`}>Kinh độ</Label>
+                        <Label htmlFor={`longitude-${warning.id}`}>
+                          Kinh độ
+                        </Label>
                         <Input
                           id={`longitude-${warning.id}`}
                           type="number"
@@ -363,7 +390,9 @@ export function NStep2({
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor={`description-${warning.id}`}>Mô tả bất thường</Label>
+                      <Label htmlFor={`description-${warning.id}`}>
+                        Mô tả bất thường
+                      </Label>
                       <Textarea
                         id={`description-${warning.id}`}
                         onChange={(event) =>
@@ -404,7 +433,7 @@ export function NStep2({
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
 
 function updateObjects(
@@ -416,7 +445,7 @@ function updateObjects(
     ...objects.map((object) =>
       object === atObject ? { ...atObject, ...changes } : object
     ),
-  ]
+  ];
 }
 
 export function VStep2({
@@ -427,12 +456,12 @@ export function VStep2({
   setAct,
   del,
 }: {
-  className?: string
-  inspectData: InspectData
-  setImageData: React.Dispatch<React.SetStateAction<ImageData | null>>
-  setIncident: React.Dispatch<React.SetStateAction<IncidentData | null>>
-  setAct: React.Dispatch<React.SetStateAction<string>>
-  del?: boolean
+  className?: string;
+  inspectData: InspectData;
+  setImageData: React.Dispatch<React.SetStateAction<ImageData | null>>;
+  setIncident: React.Dispatch<React.SetStateAction<IncidentData | null>>;
+  setAct: React.Dispatch<React.SetStateAction<string>>;
+  del?: boolean;
 }) {
   return (
     <div className={`space-y-8 ${className || ""}`}>
@@ -460,12 +489,12 @@ export function VStep2({
                       size="icon"
                       className="text-white"
                       onClick={() => {
-                        setAct("img-view")
+                        setAct("img-view");
                         setImageData({
                           id: image.id,
                           name: image.name,
                           path: image.path,
-                        })
+                        });
                       }}
                     >
                       <Maximize className="h-6 w-6" />
@@ -476,12 +505,12 @@ export function VStep2({
                         size="icon"
                         className="text-white"
                         onClick={() => {
-                          setAct("img-delete")
+                          setAct("img-delete");
                           setImageData({
                             id: image.id,
                             name: image.name,
                             path: image.path,
-                          })
+                          });
                         }}
                       >
                         <Trash className="h-6 w-6" />
@@ -512,8 +541,12 @@ export function VStep2({
                       variant="ghost"
                       size="sm"
                       onClick={() => {
-                        setAct("incident-delete")
-                        setIncident({id: incident.id, index: `#${index+1}`, path: incident.image})
+                        setAct("incident-delete");
+                        setIncident({
+                          id: incident.id,
+                          index: `#${index + 1}`,
+                          path: incident.image,
+                        });
                       }}
                     >
                       <Trash className="h-6 w-6 text-destructive" />
@@ -535,8 +568,12 @@ export function VStep2({
                           size="icon"
                           className="text-white"
                           onClick={() => {
-                            setAct("img-incident")
-                            setIncident({id: incident.id, index: `#${index+1}`, path: incident.image})
+                            setAct("img-incident");
+                            setIncident({
+                              id: incident.id,
+                              index: `#${index + 1}`,
+                              path: incident.image,
+                            });
                           }}
                         >
                           <Maximize className="h-6 w-6" />
@@ -581,6 +618,5 @@ export function VStep2({
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
-

@@ -128,8 +128,8 @@ export default function Workstations() {
 
   function search(formData: FormData) {
     const searchParams = Object.fromEntries(formData)
-    if (searchParams.status === 'all') {
-      delete searchParams.status
+    if (searchParams.activity === 'all') {
+      delete searchParams.activity
     }
     setParams(searchParams)
   }

@@ -7,15 +7,29 @@ import {
   CheckCircle2,
   Home,
   MessageSquare,
+  Plus,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { deleteCookie, getCookie } from "cookies-next";
+import { fetchWithToken } from "@/lib/fetch_data";
+import { SE } from "@/lib/api";
+import { ProfileData, ProfileRawData } from "../../profile/profile_data";
+import { Gender } from "@/enum/gender";
+import { toast } from "react-toastify";
+import Link from "next/link";
+import { Nav } from "@/lib/nav";
 
 const ChatBot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [username, setUsername] = useState<string>("");
+  const [avatar, setAvatar] = useState<string>("");
+  const [data, setData] = useState<ProfileData | null>();
+  const [menuItems, setMenuItems] = useState<Array<string>>([]);
+  const [isMobile, setIsMobile] = useState(false);
   const [messages, setMessages] = useState<{ sender: string; text: string }[]>(
     []
   );
@@ -25,6 +39,53 @@ const ChatBot: React.FC = () => {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+
+  useEffect(() => {
+    setUsername(getCookie("name") || "");
+    setAvatar(getCookie("avatar") || "");
+    setMenuItems(getCookie("menu")?.split(",") || []);
+
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  function fetchData() {
+    fetchWithToken(SE.API_PROFILE)
+      .then((response) => response as ProfileRawData)
+      .then((data) => {
+        if (!data.data) return;
+
+        setData({
+          id: data.data.user.id,
+          username: data.data.user.username,
+          displayName: data.data.user.name,
+          phone: data.data.user.phone,
+          email: data.data.user.email,
+          gender: {
+            1: Gender.Male,
+            2: Gender.Female,
+          }[data.data.user.gender],
+          role: data.data.user.role.name,
+          activity: data.data.user.activity,
+          department: data.data.user.department,
+          position: data.data.user.position,
+          workLevel: data.data.user.lvWork,
+          safeLevel: data.data.user.lvSafe,
+          avatar: data.data.user.avatar,
+          signature: data.data.user.signature,
+        });
+      })
+      .catch((e: Error) => {
+        if (e.message) toast.error(e.message);
+      });
+  }
+
+  useEffect(fetchData, []);
 
   useEffect(() => {
     scrollToBottom();
@@ -37,7 +98,7 @@ const ChatBot: React.FC = () => {
     setInput("");
 
     try {
-      const response = await fetch("https://weird-keely-epsmartteam-c347da1b.koyeb.app/ask_question/", {
+      const response = await fetch("http://127.0.0.1:8000/ask_question/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ question: input }),
@@ -103,18 +164,21 @@ const ChatBot: React.FC = () => {
               <span className="font-bold text-xl">Sepu</span>
             </div>
             <Avatar className="h-8 w-8">
-              <AvatarImage src="/placeholder.svg" />
-              <AvatarFallback>U</AvatarFallback>
+              <AvatarImage
+                src={`${process.env.NEXT_PUBLIC_API_URL}/${avatar}`}
+                alt="User avatar"
+              />
+              <AvatarFallback>AVT</AvatarFallback>
             </Avatar>
           </div>
 
           <CardContent className="p-0 bg-white">
-            <ScrollArea className="h-[400px] px-4 py-2">
+            <ScrollArea className="h-[450px] px-4 py-2">
               <div className="space-y-4">
-                <h2 className="text-3xl font-semibold text-gray-600">
-                  Chào Son 👋
+                <h2 className="text-2xl font-semibold text-gray-600">
+                  Chào {username} 👋
                 </h2>
-                <h1 className="text-4xl font-bold text-black">
+                <h1 className="text-3xl font-bold text-black">
                   Chúng tôi có thể giúp gì cho bạn?
                 </h1>
 
@@ -127,16 +191,94 @@ const ChatBot: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-gray-100 rounded-lg p-4 border border-gray-200">
-                  <h3 className="font-semibold mb-2">
-                    Chào mừng bạn đến với Hệ thống kiểm tra giám sát và phát
-                    hiện bất thường thiết bị đường dây lưới điện cao thế! 🎉
-                  </h3>
-                  <p className="text-gray-600">
-                    Tôi là trợ lý ảo của bạn, sẵn sàng hỗ trợ bạn khám phá và sử
-                    dụng hệ thống.
-                  </p>
-                  {/* <p className="text-gray-600">Switch to Starter to get custom domains, invite co-workers, and more</p> */}
+                <div className="bg-gray-100 rounded-lg border border-gray-200">
+                  <div className="p-4">
+                    <h3 className="font-semibold mb-2">
+                      Bạn cần quản lý phiếu kiểm tra?
+                    </h3>
+                  </div>
+                  <div className="border-t border-b border-gray-200">
+                    <Button
+                      variant="ghost"
+                      className="w-full p-4 h-auto bg-gray-100 hover:bg-gray-200 space-y-2 text-left flex flex-col items-start"
+                      onClick={() => {
+                        console.log("Pricing clicked");
+                      }}
+                    >
+                      <Link href={`${Nav.INSPECTDOC_PAGE}`} target="_blank">
+                        <h3 className="font-medium">Quản lý phiếu kiểm tra</h3>
+                        <p className="text-sm text-gray-600 font-normal mt-2">
+                          Chuyển đến trang quản lý phiếu kiểm tra
+                        </p>
+                      </Link>
+                    </Button>
+                  </div>
+                  <div className="p-4">
+                    <Button
+                      variant="outline"
+                      className="w-full hover:bg-stone-100"
+                    >
+                      <Link href={Nav.INSPECTDOC_DAY_PAGE} target="_blank">
+                        Tạo phiếu kiểm tra ngày
+                      </Link>
+                    </Button>
+                    <Button className="w-full text-white hover:bg-stone-500 mt-2">
+                      <Link href={Nav.INSPECTDOC_NIGHT_PAGE} target="_blank">
+                        Tạo phiếu kiểm tra đêm
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="bg-gray-100 rounded-lg border border-gray-200">
+                  <div className="p-4">
+                    <h3 className="font-semibold mb-2">
+                      Bạn cần quản lý phiếu sửa chữa?
+                    </h3>
+                  </div>
+                  <div className="border-t border-b border-gray-200">
+                    <Button
+                      variant="ghost"
+                      className="w-full p-4 h-auto bg-gray-100 hover:bg-gray-200 space-y-2 text-left flex flex-col items-start"
+                      onClick={() => {
+                        console.log("Pricing clicked");
+                      }}
+                    >
+                      <Link href={`${Nav.REPAIRDOC_PAGE}`} target="_blank">
+                        <h3 className="font-medium">Quản lý phiếu sửa chữa</h3>
+                        <p className="text-sm text-gray-600 font-normal mt-2">
+                          Chuyển đến trang quản lý phiếu sửa chữa
+                        </p>
+                      </Link>
+                    </Button>
+                  </div>
+                  <div className="p-4">
+                    <Button
+                      className="w-full text-white hover:bg-stone-500"
+                    >
+                      <Link href={Nav.REPAIRDOC_NEW_PAGE} target="_blank">
+                        Tạo phiếu sửa chữa
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="bg-gray-100 rounded-lg border border-gray-200">
+                  <div className="border-t border-b border-gray-200">
+                    <Button
+                      variant="ghost"
+                      className="w-full p-4 h-auto bg-gray-100 hover:bg-gray-200 space-y-2 text-left flex flex-col items-start"
+                      onClick={() => {
+                        console.log("Pricing clicked");
+                      }}
+                    >
+                      <Link href={`${Nav.STATISTIC_PAGE}`} target="_blank">
+                        <p className="font-normal">
+                          Bạn muốn xem thống kê công việc?
+                        </p>
+                      </Link>
+                    </Button>
+                  </div>
                 </div>
 
                 {messages.map((msg, index) => (
@@ -196,7 +338,7 @@ const ChatBot: React.FC = () => {
                 </form>
               </div>
 
-              <div className="flex border-t border-gray-200">
+              {/* <div className="flex border-t border-gray-200">
                 <Button
                   variant="ghost"
                   className="flex-1 rounded-none h-14 hover:bg-gray-100 text-gray-600"
@@ -211,7 +353,7 @@ const ChatBot: React.FC = () => {
                   <MessageSquare className="h-5 w-5" />
                   <span className="ml-2">Messages</span>
                 </Button>
-              </div>
+              </div> */}
             </div>
           </CardContent>
         </Card>
