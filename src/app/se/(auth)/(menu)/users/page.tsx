@@ -1,27 +1,52 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { toast } from "react-toastify"
-import { fetchWithToken } from "@/lib/fetch_data"
-import { SE } from "@/lib/api"
-import menubar from "@/lib/menu"
-import { UserWright } from "@/enum/user_wright"
-import { Gender } from "@/enum/gender"
-import { Search, Plus, Trash2, PenSquare, Eye, Users as UsersIcon } from "lucide-react"
-import NewUserModal from "./NewUserModal"
-import ViewUserModal from "./ViewUserModal"
-import EditUserModal from "./EditUserModal"
-import UserDontAccessPage from "@/component/NotAllow"
-import Pagination from "@/app/se/(auth)/Pagination"
-import DeleteConfirm from "@/app/se/(auth)/(menu)/_modal/DeleteConfirm"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { fetchWithToken } from "@/lib/fetch_data";
+import { SE } from "@/lib/api";
+import menubar from "@/lib/menu";
+import { UserWright } from "@/enum/user_wright";
+import { Gender } from "@/enum/gender";
+import {
+  Search,
+  Plus,
+  Trash2,
+  PenSquare,
+  Eye,
+  Users as UsersIcon,
+} from "lucide-react";
+import NewUserModal from "./NewUserModal";
+import ViewUserModal from "./ViewUserModal";
+import EditUserModal from "./EditUserModal";
+import UserDontAccessPage from "@/component/NotAllow";
+import Pagination from "@/app/se/(auth)/Pagination";
+import DeleteConfirm from "@/app/se/(auth)/(menu)/_modal/DeleteConfirm";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type UsersRawData = {
   data: {
@@ -93,25 +118,35 @@ export type ReferenceData = {
 };
 
 export default function Users() {
-  const [userWright, setUserWright] = useState<UserWright | null>(null)
-  const [isNewModalShow, setIsNewModalShow] = useState(false)
-  const [viewingData, setViewingData] = useState<UserData | null>(null)
-  const [editingData, setEditingData] = useState<UserData | null>(null)
-  const [deletingData, setDeletingData] = useState<UserData | null>(null)
-  const [users, setUsers] = useState<Array<UserData>>([])
-  const [referenceData, setReferenceData] = useState<ReferenceData | null>(null)
+  const [userWright, setUserWright] = useState<UserWright | null>(null);
+  const [isNewModalShow, setIsNewModalShow] = useState(false);
+  const [viewingData, setViewingData] = useState<UserData | null>(null);
+  const [editingData, setEditingData] = useState<UserData | null>(null);
+  const [deletingData, setDeletingData] = useState<UserData | null>(null);
+  const [users, setUsers] = useState<Array<UserData>>([]);
+  const [referenceData, setReferenceData] = useState<ReferenceData | null>(
+    null
+  );
 
-  const [params, setParams] = useState<Record<string, string>>({})
-  const [total, setTotal] = useState(0)
-  const [limit, setLimit] = useState(20)
-  const [currentPage, setCurrentPage] = useState(1)
+  const [params, setParams] = useState<Record<string, string>>({});
+  const [total, setTotal] = useState(0);
+  const [limit, setLimit] = useState(20);
+  const [currentPage, setCurrentPage] = useState(1);
 
-  function fetchData(params: Record<string, string>, limit: number, page: number) {
-    const queryParams = new URLSearchParams({ ...params, limit: String(limit), page: String(page) })
+  function fetchData(
+    params: Record<string, string>,
+    limit: number,
+    page: number
+  ) {
+    const queryParams = new URLSearchParams({
+      ...params,
+      limit: String(limit),
+      page: String(page),
+    });
     fetchWithToken(`${SE.API_USERS}?${queryParams}`)
       .then((response) => response as UsersRawData)
       .then((data) => {
-        if (!data.data) return
+        if (!data.data) return;
 
         setUsers(
           data.data.users.map((userRawData) => ({
@@ -136,67 +171,67 @@ export default function Users() {
             safeLevel: userRawData.lvSafe,
             level: userRawData.level,
           }))
-        )
+        );
 
-        setTotal(data.data.total)
+        setTotal(data.data.total);
       })
       .catch((e: Error) => {
-        if(e.message) toast.error(e.message)
-      })
+        if (e.message) toast.error(e.message);
+      });
   }
 
   function fetchReferenceData(successFunction: Function) {
-    if (referenceData) return successFunction()
+    if (referenceData) return successFunction();
 
     fetchWithToken(SE.API_USERITEM)
       .then((response) => response as ReferenceRawData)
       .then((data) => {
-        if (!data.data) return
+        if (!data.data) return;
 
         setReferenceData({
           roles: data.data.items.roles,
-        })
+        });
 
-        return successFunction()
+        return successFunction();
       })
       .catch((e: Error) => {
-        if(e.message) toast.error(e.message)
-      })
+        if (e.message) toast.error(e.message);
+      });
   }
 
   useEffect(() => {
-    if(menubar("user")) {
-      setUserWright(UserWright.Write)
-      fetchData(params, limit, currentPage)
-    } else if(menubar("user-view")) {
-      setUserWright(UserWright.Read)
-      fetchData(params, limit, currentPage)
+    if (menubar("user")) {
+      setUserWright(UserWright.Write);
+      fetchData(params, limit, currentPage);
+    } else if (menubar("user-view")) {
+      setUserWright(UserWright.Read);
+      fetchData(params, limit, currentPage);
     } else {
-      setUserWright(UserWright.None)
+      setUserWright(UserWright.None);
     }
-  }, [params, limit, currentPage])
+  }, [params, limit, currentPage]);
 
-  if (!userWright) return null
-  if (userWright === UserWright.None) return <UserDontAccessPage />
+  if (!userWright) return null;
+  if (userWright === UserWright.None) return <UserDontAccessPage />;
 
   function search(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const formData = new FormData(event.currentTarget)
-    const newParams: Record<string, string> = {}
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const newParams: Record<string, string> = {};
 
     // Use Array.from() to create an array of entries that can be iterated
     Array.from(formData.entries()).forEach(([key, value]) => {
-      if (typeof value === 'string' && value.trim() !== '') {
-        if (key === 'activity' && value === 'all') {
+      if (typeof value === "string" && value.trim() !== "") {
+        if (key === "activity" && value === "all") {
           // Skip 'all' value for activity
-          return
+          return;
         }
-        newParams[key] = value.trim()
+        newParams[key] = value.trim();
       }
-    })
+    });
 
-    setParams(newParams)
-    setCurrentPage(1) // Reset to first page when searching
+    setParams(newParams);
+    setCurrentPage(1); // Reset to first page when searching
   }
 
   return (
@@ -208,7 +243,10 @@ export default function Users() {
         </CardTitle>
       </CardHeader>
       <CardContent className="p-6">
-        <form className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6" onSubmit={search}>
+        <form
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6"
+          onSubmit={search}
+        >
           <Input name="name" placeholder="Tên người dùng" />
           <Input name="email" placeholder="Email" />
           <Input name="phone" placeholder="Số điện thoại" />
@@ -231,9 +269,13 @@ export default function Users() {
         </form>
 
         <div className="flex items-center justify-between mb-6">
-          <div className="text-lg font-semibold">Tổng số người dùng: <span className="text-primary">{total}</span></div>
+          <div className="text-lg font-semibold">
+            Tổng số người dùng: <span className="text-primary">{total}</span>
+          </div>
           {userWright === UserWright.Write && (
-            <Button onClick={() => fetchReferenceData(() => setIsNewModalShow(true))}>
+            <Button
+              onClick={() => fetchReferenceData(() => setIsNewModalShow(true))}
+            >
               <Plus className="w-4 h-4 mr-2" /> Thêm người dùng
             </Button>
           )}
@@ -255,12 +297,19 @@ export default function Users() {
             <TableBody>
               {users.map((user, index) => (
                 <TableRow key={user.id}>
-                  <TableCell className="text-center font-medium">{index + 1}</TableCell>
+                  <TableCell className="text-center font-medium">
+                    {index + 1}
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-3">
                       <Avatar>
-                        <AvatarImage src={`https://api.dicebear.com/6.x/initials/svg?seed=${user.displayName}`} alt={user.displayName} />
-                        <AvatarFallback>{user.displayName.charAt(0)}</AvatarFallback>
+                        <AvatarImage
+                          src={`https://api.dicebear.com/6.x/initials/svg?seed=${user.displayName}`}
+                          alt={user.displayName}
+                        />
+                        <AvatarFallback>
+                          {user.displayName.charAt(0)}
+                        </AvatarFallback>
                       </Avatar>
                       <div>
                         <div className="font-medium">{user.displayName}</div>
@@ -275,7 +324,9 @@ export default function Users() {
                   </TableCell>
                   <TableCell>
                     <div>{user.phone}</div>
-                    <div className="text-sm text-muted-foreground">{user.email}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {user.email}
+                    </div>
                   </TableCell>
                   <TableCell>{user.role.name}</TableCell>
                   <TableCell>
@@ -286,13 +337,19 @@ export default function Users() {
                   <TableCell>
                     <div>{user.position}</div>
                     {user.department && (
-                      <div className="text-sm text-muted-foreground">{user.department}</div>
+                      <div className="text-sm text-muted-foreground">
+                        {user.department}
+                      </div>
                     )}
                     {(user.workLevel || user.safeLevel) && (
                       <div className="text-xs text-muted-foreground mt-1">
-                        {user.workLevel && <span>Bậc thợ: {user.workLevel}/7</span>}
+                        {user.workLevel && (
+                          <span>Bậc thợ: {user.workLevel}/7</span>
+                        )}
                         {user.workLevel && user.safeLevel && " | "}
-                        {user.safeLevel && <span>Bậc an toàn: {user.safeLevel}/5</span>}
+                        {user.safeLevel && (
+                          <span>Bậc an toàn: {user.safeLevel}/5</span>
+                        )}
                       </div>
                     )}
                   </TableCell>
@@ -300,7 +357,11 @@ export default function Users() {
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Button variant="ghost" size="icon" onClick={() => setViewingData(user)}>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setViewingData(user)}
+                          >
                             <Eye className="w-4 h-4" />
                           </Button>
                         </TooltipTrigger>
@@ -314,7 +375,13 @@ export default function Users() {
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <Button variant="ghost" size="icon" onClick={() => fetchReferenceData(() => setEditingData(user))}>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() =>
+                                  fetchReferenceData(() => setEditingData(user))
+                                }
+                              >
                                 <PenSquare className="w-4 h-4" />
                               </Button>
                             </TooltipTrigger>
@@ -326,7 +393,11 @@ export default function Users() {
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <Button variant="ghost" size="icon" onClick={() => setDeletingData(user)}>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setDeletingData(user)}
+                              >
                                 <Trash2 className="w-4 h-4" />
                               </Button>
                             </TooltipTrigger>
@@ -344,35 +415,36 @@ export default function Users() {
           </Table>
         </div>
 
-        <div className="flex items-center justify-between mt-6">
+        <div className="flex items-center justify-between mt-4">
           <div className="flex items-center space-x-2">
-            <span className="text-sm text-muted-foreground">Hiển thị</span>
+            <p className="text-sm font-medium">Số bản ghi mỗi trang</p>
             <Select
               value={limit.toString()}
               onValueChange={(value) => {
-                setCurrentPage(1)
-                setLimit(Number(value))
+                setCurrentPage(1);
+                setLimit(Number(value));
               }}
             >
-              <SelectTrigger className="w-[70px]">
+              <SelectTrigger className="h-8 w-[70px]">
                 <SelectValue placeholder={limit} />
               </SelectTrigger>
-              <SelectContent>
-                {[20, 50, 100].map((limitOption) => (
-                  <SelectItem key={limitOption} value={limitOption.toString()}>
-                    {limitOption}
+              <SelectContent side="top">
+                {[20, 50, 100].map((pageSize) => (
+                  <SelectItem key={pageSize} value={`${pageSize}`}>
+                    {pageSize}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            <span className="text-sm text-muted-foreground">bản ghi mỗi trang</span>
           </div>
           <Pagination
             pages={Math.ceil(total / limit)}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
           />
-          <div className="w-20 lg:w-40" />
+          <div className="text-sm text-muted-foreground">
+            Tổng số: <span className="font-medium">{total}</span> bản ghi
+          </div>
         </div>
       </CardContent>
 
@@ -413,20 +485,19 @@ export default function Users() {
           title={`Xóa người dùng ${deletingData.displayName}?`}
           setIsDeleteConfirmModalShow={setDeletingData}
           deleteFunction={() => {
-            fetchWithToken(
-              `${SE.API_USER}/${deletingData.id}`,
-              { method: "DELETE" }
-            )
+            fetchWithToken(`${SE.API_USER}/${deletingData.id}`, {
+              method: "DELETE",
+            })
               .then((data) => {
-                if (data.message) toast.success(data.message)
-                fetchData(params, limit, currentPage)
+                if (data.message) toast.success(data.message);
+                fetchData(params, limit, currentPage);
               })
               .catch((e: Error) => {
-                if(e.message) toast.error(e.message)
-              })
+                if (e.message) toast.error(e.message);
+              });
           }}
         />
       )}
     </Card>
-  )
+  );
 }

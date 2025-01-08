@@ -1,31 +1,49 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from "react"
-import { toast } from "react-toastify"
-import Moment from "moment"
-import * as XLSX from 'xlsx'
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import Moment from "moment";
+import * as XLSX from "xlsx";
 
-import { fetchWithToken } from "@/lib/fetch_data"
-import { SE } from "@/lib/api"
-import menubar from "@/lib/menu"
-import { UserWright } from "@/enum/user_wright"
+import { fetchWithToken } from "@/lib/fetch_data";
+import { SE } from "@/lib/api";
+import menubar from "@/lib/menu";
+import { UserWright } from "@/enum/user_wright";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
-import { Search, Plus, Trash2, Edit, Eye, FileSpreadsheet } from "lucide-react"
+import { Search, Plus, Trash2, Edit, Eye, FileSpreadsheet } from "lucide-react";
 
-import NewUavModal from "./NewUavModal"
-import ViewUavModal from "./ViewUavModal"
-import EditUavModal from "./EditUavModal"
-import UserDontAccessPage from "@/component/NotAllow"
-import Pagination from "@/app/se/(auth)/Pagination"
-import DeleteConfirm from "@/app/se/(auth)/(menu)/_modal/DeleteConfirm"
+import NewUavModal from "./NewUavModal";
+import ViewUavModal from "./ViewUavModal";
+import EditUavModal from "./EditUavModal";
+import UserDontAccessPage from "@/component/NotAllow";
+import Pagination from "@/app/se/(auth)/Pagination";
+import DeleteConfirm from "@/app/se/(auth)/(menu)/_modal/DeleteConfirm";
 
 type DevicesRawData = {
   data: {
@@ -75,19 +93,20 @@ export default function Uavs() {
         const worksheet = XLSX.utils.json_to_sheet(data.data);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Thiết bị bay");
-        XLSX.writeFile(workbook, `DanhSachThietBiBay_${Moment(new Date()).format("DD-MM-YYYY")}.xlsx`);
+        XLSX.writeFile(
+          workbook,
+          `DanhSachThietBiBay_${Moment(new Date()).format("DD-MM-YYYY")}.xlsx`
+        );
       })
       .catch((e: Error) => {
-        if(e.message) toast.error(e.message);
+        if (e.message) toast.error(e.message);
       });
-  }
+  };
 
   function fetchData(params: any, limit: number, page: number) {
     params.limit = String(limit);
     params.page = String(page);
-    fetchWithToken(
-      `${SE.API_FLYCAMS}?${new URLSearchParams(params)}`
-    )
+    fetchWithToken(`${SE.API_FLYCAMS}?${new URLSearchParams(params)}`)
       .then((response) => response as DevicesRawData)
       .then((data) => {
         if (!data.data) return;
@@ -108,15 +127,15 @@ export default function Uavs() {
         setTotal(data.data.total);
       })
       .catch((e: Error) => {
-        if(e.message) toast.error(e.message);
+        if (e.message) toast.error(e.message);
       });
   }
 
   useEffect(() => {
-    if(menubar("flycam")) {
+    if (menubar("flycam")) {
       setUserWright(UserWright.Write);
       fetchData(params, limit, currentPage);
-    } else if(menubar("flycam-view")) {
+    } else if (menubar("flycam-view")) {
       setUserWright(UserWright.Read);
       fetchData(params, limit, currentPage);
     } else {
@@ -129,11 +148,11 @@ export default function Uavs() {
   if (userWright === UserWright.None) return <UserDontAccessPage />;
 
   function search(formData: FormData) {
-    const searchParams = Object.fromEntries(formData)
-    if (searchParams.status === 'all') {
-      delete searchParams.status
+    const searchParams = Object.fromEntries(formData);
+    if (searchParams.status === "all") {
+      delete searchParams.status;
     }
-    setParams(searchParams)
+    setParams(searchParams);
   }
 
   return (
@@ -147,10 +166,24 @@ export default function Uavs() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={(e) => { e.preventDefault(); search(new FormData(e.currentTarget)); }} className="space-y-4 mb-6">
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            search(new FormData(e.currentTarget));
+          }}
+          className="space-y-4 mb-6"
+        >
           <div className="flex flex-wrap gap-4">
-            <Input name="name" placeholder="Tên thiết bị bay" className="flex-1" />
-            <Input name="code" placeholder="Mã thiết bị bay" className="flex-1" />
+            <Input
+              name="name"
+              placeholder="Tên thiết bị bay"
+              className="flex-1"
+            />
+            <Input
+              name="code"
+              placeholder="Mã thiết bị bay"
+              className="flex-1"
+            />
             <Select name="activity">
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Trạng thái" />
@@ -198,9 +231,13 @@ export default function Uavs() {
                   <TableCell className="font-medium">{index + 1}</TableCell>
                   <TableCell>{device.name}</TableCell>
                   <TableCell>{device.code}</TableCell>
-                  <TableCell>{Moment(device.purchaseDate).format("DD-MM-YYYY")}</TableCell>
                   <TableCell>
-                    <Badge variant={device.activity ? "default" : "destructive"}>
+                    {Moment(device.purchaseDate).format("DD-MM-YYYY")}
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={device.activity ? "default" : "destructive"}
+                    >
                       {device.activity ? "Hoạt động" : "Không hoạt động"}
                     </Badge>
                   </TableCell>
@@ -213,7 +250,11 @@ export default function Uavs() {
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Button variant="ghost" size="sm" onClick={() => setViewingData(device)}>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setViewingData(device)}
+                          >
                             <Eye className="h-4 w-4" />
                           </Button>
                         </TooltipTrigger>
@@ -228,7 +269,11 @@ export default function Uavs() {
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <Button variant="ghost" size="sm" onClick={() => setEditingData(device)}>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setEditingData(device)}
+                              >
                                 <Edit className="h-4 w-4" />
                               </Button>
                             </TooltipTrigger>
@@ -240,7 +285,11 @@ export default function Uavs() {
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <Button variant="ghost" size="sm" onClick={() => setDeletingData(device)}>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setDeletingData(device)}
+                              >
                                 <Trash2 className="h-4 w-4" />
                               </Button>
                             </TooltipTrigger>
@@ -260,34 +309,34 @@ export default function Uavs() {
 
         <div className="flex items-center justify-between mt-4">
           <div className="flex items-center space-x-2">
-            <span className="text-sm font-medium">Số bản ghi:</span>
+            <p className="text-sm font-medium">Số bản ghi mỗi trang</p>
             <Select
               value={limit.toString()}
               onValueChange={(value) => {
-                setCurrentPage(1)
-                setLimit(Number(value))
+                setCurrentPage(1);
+                setLimit(Number(value));
               }}
             >
-              <SelectTrigger className="w-[70px]">
+              <SelectTrigger className="h-8 w-[70px]">
                 <SelectValue placeholder={limit} />
               </SelectTrigger>
-              <SelectContent>
-                {[20, 50, 100].map((limitOption) => (
-                  <SelectItem key={limitOption} value={limitOption.toString()}>
-                    {limitOption}
+              <SelectContent side="top">
+                {[20, 50, 100].map((pageSize) => (
+                  <SelectItem key={pageSize} value={`${pageSize}`}>
+                    {pageSize}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
-            <span className="text-sm font-medium">/trang</span>
           </div>
-
           <Pagination
             pages={Math.ceil(total / limit)}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
           />
-          <div className="w-20 lg:w-40" />
+          <div className="text-sm text-muted-foreground">
+            Tổng số: <span className="font-medium">{total}</span> bản ghi
+          </div>
         </div>
       </CardContent>
 
@@ -327,20 +376,19 @@ export default function Uavs() {
           title={`Xóa thiết bị ${deletingData.name}?`}
           setIsDeleteConfirmModalShow={setDeletingData}
           deleteFunction={() => {
-            fetchWithToken(
-              `${SE.API_FLYCAM}/${deletingData.id}`,
-              { method: "DELETE" }
-            )
+            fetchWithToken(`${SE.API_FLYCAM}/${deletingData.id}`, {
+              method: "DELETE",
+            })
               .then((data) => {
-                if (data.message) toast.success(data.message)
-                fetchData(params, limit, currentPage)
+                if (data.message) toast.success(data.message);
+                fetchData(params, limit, currentPage);
               })
               .catch((e: Error) => {
-                if(e.message) toast.error(e.message)
-              })
+                if (e.message) toast.error(e.message);
+              });
           }}
         />
       )}
     </Card>
-  )
+  );
 }

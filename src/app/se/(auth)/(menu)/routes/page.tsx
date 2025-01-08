@@ -1,37 +1,55 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { toast } from "react-toastify"
-import * as XLSX from 'xlsx'
-import Moment from "moment"
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { toast } from "react-toastify";
+import * as XLSX from "xlsx";
+import Moment from "moment";
 
-import { fetchWithToken } from "@/lib/fetch_data"
-import { SE } from "@/lib/api"
-import menubar from "@/lib/menu"
-import { Nav } from "@/lib/nav"
-import { UserWright } from "@/enum/user_wright"
-import { Status } from "@/enum/status"
+import { fetchWithToken } from "@/lib/fetch_data";
+import { SE } from "@/lib/api";
+import menubar from "@/lib/menu";
+import { Nav } from "@/lib/nav";
+import { UserWright } from "@/enum/user_wright";
+import { Status } from "@/enum/status";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
-import { Search, Plus, Trash, Edit, Eye, Download, Upload } from "lucide-react"
+import { Search, Plus, Trash, Edit, Eye, Download, Upload } from "lucide-react";
 
 import { ReferenceData, ReferenceRawData } from "./[id]/powers/page";
-import NewRouteModal from "./NewRouteModal"
-import ViewRouteModal from "./ViewRouteModal"
-import EditRouteModal from "./EditRouteModal"
-import NewPowerModal from "./[id]/powers/NewPowerModal"
-import UserDontAccessPage from "@/component/NotAllow"
-import Pagination from "@/app/se/(auth)/Pagination"
-import DeleteConfirm from "@/app/se/(auth)/(menu)/_modal/DeleteConfirm"
+import NewRouteModal from "./NewRouteModal";
+import ViewRouteModal from "./ViewRouteModal";
+import EditRouteModal from "./EditRouteModal";
+import NewPowerModal from "./[id]/powers/NewPowerModal";
+import UserDontAccessPage from "@/component/NotAllow";
+import Pagination from "@/app/se/(auth)/Pagination";
+import DeleteConfirm from "@/app/se/(auth)/(menu)/_modal/DeleteConfirm";
 
 type PowerlinesRawData = {
   data: {
@@ -92,7 +110,7 @@ export default function Routes() {
   const [total, setTotal] = useState(0);
   const [limit, setLimit] = useState(20);
   const [currentPage, setCurrentPage] = useState(1);
-  const [fileName, setFileName] = useState<string>('');
+  const [fileName, setFileName] = useState<string>("");
   const [isFileUploaded, setIsFileUploaded] = useState<boolean>(false);
   const [file, setFile] = useState<File | null>(null);
 
@@ -102,7 +120,7 @@ export default function Routes() {
       setFile(event.target.files[0]);
       setIsFileUploaded(true);
     } else {
-      setFileName('');
+      setFileName("");
       setFile(null);
       setIsFileUploaded(false);
     }
@@ -111,7 +129,7 @@ export default function Routes() {
   const handleImportClick = () => {
     if (file) {
       const formData = new FormData();
-      formData.append('routes', file);
+      formData.append("routes", file);
       importRoute(formData);
     }
   };
@@ -122,19 +140,20 @@ export default function Routes() {
         const worksheet = XLSX.utils.json_to_sheet(data.data);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Tuyến");
-        XLSX.writeFile(workbook, `DanhSachTuyen_${Moment(new Date()).format("DD-MM-YYYY")}.xlsx`);
+        XLSX.writeFile(
+          workbook,
+          `DanhSachTuyen_${Moment(new Date()).format("DD-MM-YYYY")}.xlsx`
+        );
       })
       .catch((e: Error) => {
-        if(e.message) toast.error(e.message);
+        if (e.message) toast.error(e.message);
       });
-  }
+  };
 
   function fetchData(params: any, limit: number, page: number) {
     params.limit = String(limit);
     params.page = String(page);
-    fetchWithToken(
-      `${SE.API_ROUTES}?${new URLSearchParams(params)}`
-    )
+    fetchWithToken(`${SE.API_ROUTES}?${new URLSearchParams(params)}`)
       .then((response) => response as PowerlinesRawData)
       .then((data) => {
         if (!data.data) return;
@@ -145,11 +164,13 @@ export default function Routes() {
             name: powerlineRawData.name,
             code: powerlineRawData.code,
             powerPolesTotal: powerlineRawData.numPower,
-            status: powerlineRawData.status ? {
-              [1]: Status.Okay,
-              [2]: Status.Warning,
-              [3]: Status.Error,
-            }[powerlineRawData.status] : null,
+            status: powerlineRawData.status
+              ? {
+                  [1]: Status.Okay,
+                  [2]: Status.Warning,
+                  [3]: Status.Error,
+                }[powerlineRawData.status]
+              : null,
             note: powerlineRawData.note,
           }))
         );
@@ -157,7 +178,7 @@ export default function Routes() {
         setTotal(data.data.total);
       })
       .catch((e: Error) => {
-        if(e.message) toast.error(e.message);
+        if (e.message) toast.error(e.message);
       });
   }
 
@@ -174,7 +195,7 @@ export default function Routes() {
         return successFunction();
       })
       .catch((e: Error) => {
-        if(e.message) toast.error(e.message);
+        if (e.message) toast.error(e.message);
       });
   }
 
@@ -192,15 +213,15 @@ export default function Routes() {
         router.push(Nav.ROUTE_PAGE);
       })
       .catch((e: Error) => {
-        if(e.message) toast.error(e.message);
+        if (e.message) toast.error(e.message);
       });
   }
 
   useEffect(() => {
-   if(menubar("route")) {
+    if (menubar("route")) {
       setUserWright(UserWright.Write);
       fetchData(params, limit, currentPage);
-    } else if(menubar("route-view")) {
+    } else if (menubar("route-view")) {
       setUserWright(UserWright.Read);
       fetchData(params, limit, currentPage);
     } else {
@@ -213,22 +234,19 @@ export default function Routes() {
   if (userWright === UserWright.None) return <UserDontAccessPage />;
 
   function search(formData: FormData) {
-    const searchParams = Object.fromEntries(formData)
-    if (searchParams.status === 'all') {
-      delete searchParams.status
+    const searchParams = Object.fromEntries(formData);
+    if (searchParams.status === "all") {
+      delete searchParams.status;
     }
-    setParams(searchParams)
+    setParams(searchParams);
   }
 
   return (
     <div className="space-y-6 p-2">
       <div className="flex justify-between items-center p-1">
-        <h1 className="text-3xl font-bold tracking-tight p-1">Danh sách tuyến</h1>
-        {userWright === UserWright.Write && (
-          <Button onClick={() => setIsNewModalShow(true)}>
-            <Plus className="mr-2 h-4 w-4" /> Thêm tuyến
-          </Button>
-        )}
+        <h1 className="text-3xl font-bold tracking-tight p-1">
+          Danh sách tuyến
+        </h1>
       </div>
 
       <Card>
@@ -236,7 +254,13 @@ export default function Routes() {
           <CardTitle>Tìm kiếm</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={(e) => { e.preventDefault(); search(new FormData(e.currentTarget)) }} className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              search(new FormData(e.currentTarget));
+            }}
+            className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+          >
             <Input name="name" placeholder="Tên tuyến" />
             <Input name="code" placeholder="Mã tuyến" />
             <Select name="status">
@@ -246,18 +270,18 @@ export default function Routes() {
               <SelectContent>
                 <SelectItem value="all">Tất cả trạng thái</SelectItem>
                 <SelectItem value="1">Bình thường</SelectItem>
-                <SelectItem value="2">Vận hành tạm thời</SelectItem>
+                <SelectItem value="2">Cảnh báo</SelectItem>
                 <SelectItem value="3">Sự cố</SelectItem>
               </SelectContent>
             </Select>
-            <Button type="submit" className="sm:col-span-2 md:col-span-3">
+            <Button type="submit" className="w-24">
               <Search className="mr-2 h-4 w-4" /> Tìm kiếm
             </Button>
           </form>
         </CardContent>
       </Card>
 
-      <div className="flex justify-between items-center">
+      <div className="justify-between items-center">
         <div className="flex space-x-2">
           {userWright === UserWright.Write && (
             <TooltipProvider>
@@ -296,13 +320,22 @@ export default function Routes() {
             </Tooltip>
           </TooltipProvider>
         </div>
-        <div className="font-medium">Tổng số: {total}</div>
+        <div className="flex items-center justify-between">
+          <div className="font-medium">Tổng số: {total}</div>
+          {userWright === UserWright.Write && (
+            <Button onClick={() => setIsNewModalShow(true)}>
+              <Plus className="mr-2 h-4 w-4" /> Thêm tuyến
+            </Button>
+          )}
+        </div>
       </div>
 
       {isFileUploaded && (
         <div className="flex items-center space-x-2 bg-muted p-2 rounded-md">
           <span>{fileName}</span>
-          <Button size="sm" onClick={handleImportClick}>Import</Button>
+          <Button size="sm" onClick={handleImportClick}>
+            Import
+          </Button>
         </div>
       )}
 
@@ -324,7 +357,9 @@ export default function Routes() {
               {powerlines.map((powerline, index) => (
                 <TableRow key={powerline.id}>
                   <TableCell>{index + 1}</TableCell>
-                  <TableCell className="font-medium">{powerline.name}</TableCell>
+                  <TableCell className="font-medium">
+                    {powerline.name}
+                  </TableCell>
                   <TableCell>{powerline.code}</TableCell>
                   <TableCell>
                     <div className="flex items-center space-x-2">
@@ -341,7 +376,11 @@ export default function Routes() {
                               <Button
                                 variant="ghost"
                                 size="icon"
-                                onClick={() => fetchPowerPoleReferenceData(() => setNewPowerpolePowerline(powerline.id))}
+                                onClick={() =>
+                                  fetchPowerPoleReferenceData(() =>
+                                    setNewPowerpolePowerline(powerline.id)
+                                  )
+                                }
                               >
                                 <Plus className="h-4 w-4" />
                               </Button>
@@ -355,15 +394,25 @@ export default function Routes() {
                   <TableCell>
                     {powerline.status && (
                       <Badge
-                        variant={powerline.status === Status.Okay ? "default" : 
-                                powerline.status === Status.Warning ? "outline" : "destructive"}
+                        variant={
+                          powerline.status === Status.Okay
+                            ? "default"
+                            : powerline.status === Status.Warning
+                            ? "outline"
+                            : "destructive"
+                        }
                       >
-                        {powerline.status === Status.Okay ? "Bình thường" :
-                        powerline.status === Status.Warning ? "Vận hành tạm thời" : "Sự cố"}
+                        {powerline.status === Status.Okay
+                          ? "Bình thường"
+                          : powerline.status === Status.Warning
+                          ? "Cảnh báo"
+                          : "Sự cố"}
                       </Badge>
                     )}
                   </TableCell>
-                  <TableCell className="max-w-[200px] truncate">{powerline.note}</TableCell>
+                  <TableCell className="max-w-[200px] truncate">
+                    {powerline.note}
+                  </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end space-x-2">
                       <TooltipProvider>
@@ -451,19 +500,18 @@ export default function Routes() {
         <div className="w-20 lg:w-40" />
       </div>
 
-      {powerPoleReferenceData &&
-        typeof newPowerpolePowerline != "boolean" && (
-          <NewPowerModal
-            powerline={String(newPowerpolePowerline)}
-            setIsNewModalShow={setNewPowerpolePowerline}
-            fetchData={fetchData}
-            params={params}
-            limit={limit}
-            currentPage={currentPage}
-            crossCut={true}
-            referenceData={powerPoleReferenceData}
-          />
-        )}
+      {powerPoleReferenceData && typeof newPowerpolePowerline != "boolean" && (
+        <NewPowerModal
+          powerline={String(newPowerpolePowerline)}
+          setIsNewModalShow={setNewPowerpolePowerline}
+          fetchData={fetchData}
+          params={params}
+          limit={limit}
+          currentPage={currentPage}
+          crossCut={true}
+          referenceData={powerPoleReferenceData}
+        />
+      )}
 
       {viewingData && (
         <ViewRouteModal
@@ -502,21 +550,20 @@ export default function Routes() {
           title={`Xóa tuyến ${deletingData.name}?`}
           setIsDeleteConfirmModalShow={setDeletingData}
           deleteFunction={() => {
-            fetchWithToken(
-              `${SE.API_ROUTE}/${deletingData.id}`,
-              { method: "DELETE" }
-            )
+            fetchWithToken(`${SE.API_ROUTE}/${deletingData.id}`, {
+              method: "DELETE",
+            })
               .then((data) => {
                 if (data.message) toast.success(data.message);
 
                 fetchData(params, limit, currentPage);
               })
               .catch((e: Error) => {
-                if(e.message) toast.error(e.message);
+                if (e.message) toast.error(e.message);
               });
           }}
         />
       )}
     </div>
-  )
+  );
 }

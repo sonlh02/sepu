@@ -1,25 +1,49 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { toast } from "react-toastify"
-import { fetchWithToken } from "@/lib/fetch_data"
-import { SE } from "@/lib/api"
-import menubar from "@/lib/menu"
-import { UserWright } from "@/enum/user_wright"
-import { Search, Plus, Trash2, Edit, Eye, Users } from "lucide-react"
-import NewRoleModal from "./NewRoleModal"
-import ViewRoleModal from "./ViewRoleModal"
-import EditRoleModal from "./EditRoleModal"
-import UserDontAccessPage from "@/component/NotAllow"
-import Pagination from "@/app/se/(auth)/Pagination"
-import DeleteConfirm from "@/app/se/(auth)/(menu)/_modal/DeleteConfirm"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { fetchWithToken } from "@/lib/fetch_data";
+import { SE } from "@/lib/api";
+import menubar from "@/lib/menu";
+import { UserWright } from "@/enum/user_wright";
+import { Search, Plus, Trash2, Edit, Eye, Users } from "lucide-react";
+import NewRoleModal from "./NewRoleModal";
+import ViewRoleModal from "./ViewRoleModal";
+import EditRoleModal from "./EditRoleModal";
+import UserDontAccessPage from "@/component/NotAllow";
+import Pagination from "@/app/se/(auth)/Pagination";
+import DeleteConfirm from "@/app/se/(auth)/(menu)/_modal/DeleteConfirm";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 export type RolesRawData = {
   data: {
@@ -78,9 +102,7 @@ export default function Roles() {
   function fetchData(params: any, limit: number, page: number) {
     params.limit = String(limit);
     params.page = String(page);
-    fetchWithToken(
-      `${SE.API_ROLES}?${new URLSearchParams(params)}`
-    )
+    fetchWithToken(`${SE.API_ROLES}?${new URLSearchParams(params)}`)
       .then((response) => response as RolesRawData)
       .then((data) => {
         if (!data.data) return;
@@ -97,7 +119,7 @@ export default function Roles() {
         setTotal(data.data.total);
       })
       .catch((e: Error) => {
-        if(e.message) toast.error(e.message);
+        if (e.message) toast.error(e.message);
       });
   }
 
@@ -114,15 +136,15 @@ export default function Roles() {
         return successFunction();
       })
       .catch((e: Error) => {
-        if(e.message) toast.error(e.message);
+        if (e.message) toast.error(e.message);
       });
   }
 
   useEffect(() => {
-    if(menubar("role")) {
+    if (menubar("role")) {
       setUserWright(UserWright.Write);
       fetchData(params, limit, currentPage);
-    } else if(menubar("role-view")) {
+    } else if (menubar("role-view")) {
       setUserWright(UserWright.Read);
       fetchData(params, limit, currentPage);
     } else {
@@ -130,11 +152,11 @@ export default function Roles() {
     }
   }, [params, limit, currentPage]);
 
-  if (!userWright) return null
-  if (userWright === UserWright.None) return <UserDontAccessPage />
+  if (!userWright) return null;
+  if (userWright === UserWright.None) return <UserDontAccessPage />;
 
   function search(formData: FormData) {
-    setParams(Object.fromEntries(formData))
+    setParams(Object.fromEntries(formData));
   }
 
   return (
@@ -144,20 +166,33 @@ export default function Roles() {
           <Users className="mr-2 h-6 w-6" />
           Danh sách vai trò
         </CardTitle>
-        <CardDescription>Quản lý và phân quyền các vai trò trong hệ thống</CardDescription>
+        <CardDescription>
+          Quản lý và phân quyền các vai trò trong hệ thống
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           <div className="flex items-center space-x-2">
-            <form className="flex-1 flex items-center space-x-2" action={search}>
-              <Input className="flex-1" name="name" placeholder="Tìm kiếm vai trò..." />
+            <form
+              className="flex-1 flex items-center space-x-2"
+              action={search}
+            >
+              <Input
+                className="flex-1"
+                name="name"
+                placeholder="Tìm kiếm vai trò..."
+              />
               <Button type="submit" variant="secondary">
                 <Search className="mr-2 h-4 w-4" />
                 Tìm kiếm
               </Button>
             </form>
             {userWright === UserWright.Write && (
-              <Button onClick={() => fetchReferenceData(() => setIsNewModalShow(true))}>
+              <Button
+                onClick={() =>
+                  fetchReferenceData(() => setIsNewModalShow(true))
+                }
+              >
                 <Plus className="mr-2 h-4 w-4" /> Thêm vai trò
               </Button>
             )}
@@ -176,7 +211,9 @@ export default function Roles() {
               <TableBody>
                 {roles.map((role, index) => (
                   <TableRow key={role.id}>
-                    <TableCell className="text-center font-medium">{index + 1}</TableCell>
+                    <TableCell className="text-center font-medium">
+                      {index + 1}
+                    </TableCell>
                     <TableCell className="font-medium">{role.name}</TableCell>
                     <TableCell>{role.description}</TableCell>
                     <TableCell className="text-right">
@@ -184,7 +221,11 @@ export default function Roles() {
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <Button variant="outline" size="icon" onClick={() => setViewingData(role)}>
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={() => setViewingData(role)}
+                              >
                                 <Eye className="h-4 w-4" />
                               </Button>
                             </TooltipTrigger>
@@ -198,7 +239,15 @@ export default function Roles() {
                             <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger asChild>
-                                  <Button variant="outline" size="icon" onClick={() => fetchReferenceData(() => setEditingData(role))}>
+                                  <Button
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={() =>
+                                      fetchReferenceData(() =>
+                                        setEditingData(role)
+                                      )
+                                    }
+                                  >
                                     <Edit className="h-4 w-4" />
                                   </Button>
                                 </TooltipTrigger>
@@ -210,7 +259,11 @@ export default function Roles() {
                             <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger asChild>
-                                  <Button variant="outline" size="icon" onClick={() => setDeletingData(role)}>
+                                  <Button
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={() => setDeletingData(role)}
+                                  >
                                     <Trash2 className="h-4 w-4" />
                                   </Button>
                                 </TooltipTrigger>
@@ -229,39 +282,35 @@ export default function Roles() {
             </Table>
           </div>
 
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mt-4">
             <div className="flex items-center space-x-2">
-              <span className="text-sm font-medium">Hiển thị:</span>
+              <p className="text-sm font-medium">Số bản ghi mỗi trang</p>
               <Select
-                value={String(limit)}
+                value={limit.toString()}
                 onValueChange={(value) => {
-                  setCurrentPage(1)
-                  setLimit(Number(value))
+                  setCurrentPage(1);
+                  setLimit(Number(value));
                 }}
               >
-                <SelectTrigger className="w-[70px]">
-                  <SelectValue placeholder="20" />
+                <SelectTrigger className="h-8 w-[70px]">
+                  <SelectValue placeholder={limit} />
                 </SelectTrigger>
-                <SelectContent>
-                  {[20, 50, 100].map((limitOption) => (
-                    <SelectItem key={limitOption} value={String(limitOption)}>
-                      {limitOption}
+                <SelectContent side="top">
+                  {[20, 50, 100].map((pageSize) => (
+                    <SelectItem key={pageSize} value={`${pageSize}`}>
+                      {pageSize}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <span className="text-sm font-medium">mục / trang</span>
             </div>
-
             <Pagination
               pages={Math.ceil(total / limit)}
               currentPage={currentPage}
               setCurrentPage={setCurrentPage}
             />
-
-            <div className="flex items-center space-x-2">
-              <span className="text-sm font-medium">Tổng số:</span>
-              <Badge variant="secondary">{total}</Badge>
+            <div className="text-sm text-muted-foreground">
+              Tổng số: <span className="font-medium">{total}</span> bản ghi
             </div>
           </div>
         </div>
@@ -305,20 +354,19 @@ export default function Roles() {
           title={`Xóa người dùng ${deletingData.name}?`}
           setIsDeleteConfirmModalShow={setDeletingData}
           deleteFunction={() => {
-            fetchWithToken(
-              `${SE.API_ROLE}/${deletingData.id}`,
-              { method: "DELETE" }
-            )
+            fetchWithToken(`${SE.API_ROLE}/${deletingData.id}`, {
+              method: "DELETE",
+            })
               .then((data) => {
-                if (data.message) toast.success(data.message)
-                fetchData(params, limit, currentPage)
+                if (data.message) toast.success(data.message);
+                fetchData(params, limit, currentPage);
               })
               .catch((e: Error) => {
-                if(e.message) toast.error(e.message)
-              })
+                if (e.message) toast.error(e.message);
+              });
           }}
         />
       )}
     </Card>
-  )
+  );
 }

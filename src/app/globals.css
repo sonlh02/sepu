@@ -73,3 +73,7 @@
     @apply bg-background text-foreground;
   }
 }
+
+input:focus {
+  user-select: none; /* Ngăn chặn việc chọn văn bản khi focus */
+}

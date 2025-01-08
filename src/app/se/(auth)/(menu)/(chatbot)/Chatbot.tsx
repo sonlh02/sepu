@@ -185,7 +185,7 @@ const ChatBot: React.FC = () => {
                 <div className="bg-gray-100 rounded-lg p-4 border border-gray-200">
                   <div className="flex items-center gap-2 text-green-600">
                     <CheckCircle2 className="h-5 w-5" />
-                    <span className="font-medium">
+                    <span className="font-medium text-sm">
                       Tình trạng: Tất cả các hệ thống đều hoạt động
                     </span>
                   </div>

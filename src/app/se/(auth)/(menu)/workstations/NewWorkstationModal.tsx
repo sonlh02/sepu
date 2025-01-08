@@ -1,37 +1,37 @@
-'use client'
+"use client";
 
-import { Dispatch, SetStateAction, useState } from "react"
-import { toast } from "react-toastify"
-import { format } from "date-fns"
-import { Calendar as CalendarIcon } from "lucide-react"
-import { fetchWithToken } from "@/lib/fetch_data"
-import { SE } from "@/lib/api"
-
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Checkbox } from "@/components/ui/checkbox"
+import { Dispatch, SetStateAction, useState } from "react";
+import { toast } from "react-toastify";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { fetchWithToken } from "@/lib/fetch_data";
+import { SE } from "@/lib/api";
+import DatePicker from "react-datepicker";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Calendar } from "@/components/ui/calendar"
+} from "@/components/ui/dialog";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
+} from "@/components/ui/popover";
 
 interface NewWorkstationModalProps {
-  className?: string
-  setIsNewModalShow: Dispatch<SetStateAction<boolean>>
-  fetchData: (params: any, limit: number, currentPage: number) => void
-  params: any
-  limit: number
-  currentPage: number
+  className?: string;
+  setIsNewModalShow: Dispatch<SetStateAction<boolean>>;
+  fetchData: (params: any, limit: number, currentPage: number) => void;
+  params: any;
+  limit: number;
+  currentPage: number;
 }
 
 export default function NewWorkstationModal({
@@ -40,17 +40,19 @@ export default function NewWorkstationModal({
   fetchData,
   params,
   limit,
-  currentPage
+  currentPage,
 }: NewWorkstationModalProps) {
-  const [purchaseDate, setPurchaseDate] = useState<Date | undefined>(new Date())
+  const [purchaseDate, setPurchaseDate] = useState<Date | undefined>(
+    new Date()
+  );
 
   async function create(formData: FormData) {
-    const name = formData.get("name")?.toString() || ""
-    const code = formData.get("code")?.toString() || ""
-    const wsCode = formData.get("wsCode")?.toString() || ""
-    const wssKey = formData.get("wssKey")?.toString() || ""
-    const activity = formData.get("activity") === "on"
-    const note = formData.get("note")?.toString() || ""
+    const name = formData.get("name")?.toString() || "";
+    const code = formData.get("code")?.toString() || "";
+    const wsCode = formData.get("wsCode")?.toString() || "";
+    const wssKey = formData.get("wssKey")?.toString() || "";
+    const activity = formData.get("activity") === "on";
+    const note = formData.get("note")?.toString() || "";
 
     try {
       const data = await fetchWithToken(SE.API_WORKSTATION, {
@@ -64,14 +66,14 @@ export default function NewWorkstationModal({
           activity,
           note,
         }),
-      })
+      });
 
-      if (data.message) toast.success(data.message)
+      if (data.message) toast.success(data.message);
 
-      setIsNewModalShow(false)
-      fetchData(params, limit, currentPage)
+      setIsNewModalShow(false);
+      fetchData(params, limit, currentPage);
     } catch (e) {
-      if (e instanceof Error && e.message) toast.error(e.message)
+      if (e instanceof Error && e.message) toast.error(e.message);
     }
   }
 
@@ -79,12 +81,16 @@ export default function NewWorkstationModal({
     <Dialog open={true} onOpenChange={() => setIsNewModalShow(false)}>
       <DialogContent className={`sm:max-w-[425px] ${className || ""}`}>
         <DialogHeader>
-          <DialogTitle className="text-center text-2xl font-bold">Thêm máy trạm</DialogTitle>
+          <DialogTitle className="text-center text-2xl font-bold">
+            Thêm máy trạm
+          </DialogTitle>
         </DialogHeader>
-        <form onSubmit={(e) => {
-          e.preventDefault()
-          create(new FormData(e.currentTarget))
-        }}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            create(new FormData(e.currentTarget));
+          }}
+        >
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
               <Label htmlFor="name">
@@ -102,25 +108,14 @@ export default function NewWorkstationModal({
 
             <div className="grid gap-2">
               <Label htmlFor="purchaseDate">Ngày mua</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className={`w-full justify-start text-left font-normal ${!purchaseDate && "text-muted-foreground"}`}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {purchaseDate ? format(purchaseDate, "PPP") : <span>Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={purchaseDate}
-                    onSelect={setPurchaseDate}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <DatePicker
+                name="purchaseDate"
+                id="purchaseDate"
+                className="input input-bordered w-full py-3 px-4 text-sm border rounded-lg border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                dateFormat="dd/MM/yyyy"
+                selected={purchaseDate}
+                onChange={(date) => date && setPurchaseDate(date)}
+              />
             </div>
 
             <div className="grid gap-2">
@@ -149,7 +144,11 @@ export default function NewWorkstationModal({
           </div>
 
           <div className="flex justify-end space-x-2">
-            <Button type="button" variant="outline" onClick={() => setIsNewModalShow(false)}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setIsNewModalShow(false)}
+            >
               Hủy
             </Button>
             <Button type="submit">Thêm</Button>
@@ -157,5 +156,5 @@ export default function NewWorkstationModal({
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
