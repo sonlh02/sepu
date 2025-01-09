@@ -77,3 +77,30 @@
 input:focus {
   user-select: none; /* Ngăn chặn việc chọn văn bản khi focus */
 }
+
+@media print {
+	@page {
+	  size: A4;
+	  margin: 2cm 1.5cm 2cm 3cm;
+	}
+  
+	body {
+	  margin: 0;
+	  padding: 0;
+	}
+  
+	.print-content {
+	  font-family: "Times New Roman", serif;
+	  font-size: 14pt;
+	  line-height: 1.5;
+	  page-break-after: auto; /* Tự động chia trang khi nội dung dài */
+	}
+  
+	.page-break {
+	  page-break-before: always; /* Chia trang khi cần */
+	}
+
+	.signature-section {
+		page-break-inside: avoid; /* Tránh ngắt trang bên trong phần chữ ký */
+	  }
+  }

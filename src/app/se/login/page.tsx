@@ -39,9 +39,7 @@ export default function Component() {
         saveToken(data);
 
         const menuItems: Array<string> = getCookie("menu")?.split(",") || [];
-        if (
-          (menuItems.length == 1 && menuItems[0] == "FULL")
-        ) {
+        if (menuItems.length == 1 && menuItems[0] == "FULL") {
           router.push(Nav.DASHBOARD_PAGE);
         } else {
           router.push(Nav.DASHBOARD_PAGE);
@@ -99,15 +97,6 @@ export default function Component() {
                 {/* <p id="passwordHint" className="text-sm text-muted-foreground">
                   Nhập mật khẩu tài khoản của bạn
                 </p> */}
-              </div>
-              <div className="flex items-center space-x-2">
-                <Checkbox id="remember" />
-                <label
-                  htmlFor="remember"
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  Nhớ mật khẩu
-                </label>
               </div>
             </div>
             <Button className="w-full mt-5" type="submit">

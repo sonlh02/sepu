@@ -75,7 +75,13 @@ const config = {
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out'
-      }
+      },
+      fontFamily: {
+        times: ["Times New Roman", "serif"],
+      },
+      fontSize: {
+        base: "14px",
+      },
     }
   },
   plugins: [require("tailwindcss-animate")],
