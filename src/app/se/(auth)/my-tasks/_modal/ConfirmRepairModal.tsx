@@ -63,7 +63,7 @@ export default function ConfirmRepairModal({
           <Button variant="outline" onClick={() => setAction("")}>
             Hủy
           </Button>
-          <Button onClick={confirm} className="bg-blue-600 hover:bg-blue-700">
+          <Button onClick={confirm} className="bg-blue-500 hover:bg-blue-600">
             <CheckCircle className="mr-2 h-4 w-4" />
             Nhận phiếu
           </Button>

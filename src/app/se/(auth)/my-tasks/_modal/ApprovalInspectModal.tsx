@@ -79,7 +79,7 @@ export default function ApprovalInspectModal({
         <DialogContent className={`max-w-4xl p-0 overflow-hidden ${className || ""}`}>
           <DialogHeader className="p-6 pb-0">
             <DialogTitle className="text-center text-2xl font-bold">
-              <Badge variant="outline" className={`absolute top-2 right-2 ${inspectData.type === InspectType.Day ? "bg-yellow-100 text-yellow-800" : "bg-blue-100 text-blue-800"}`}>
+              <Badge variant="outline" className={`absolute top-2 left-2 ${inspectData.type === InspectType.Day ? "bg-yellow-100 text-yellow-800" : "bg-blue-100 text-blue-800"}`}>
                 {inspectData.type === InspectType.Day ? "Phiếu kiểm tra ngày" : "Phiếu kiểm tra đêm"}
               </Badge>
               Phiếu <span className="break-all font-mono">{inspectData.code}</span>
@@ -150,21 +150,12 @@ export default function ApprovalInspectModal({
               <Button
                 type="submit"
                 variant="default"
-                className="flex-1 bg-green-500 hover:bg-green-600 text-white"
+                className="flex-1 bg-blue-800 hover:bg-blue-900 text-white"
               >
                 <Check className="mr-2 h-4 w-4" /> Ký duyệt
               </Button>
             </div>
           </form>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute right-2 top-2"
-            onClick={() => setIsOpen(false)}
-          >
-            <X className="h-4 w-4" />
-          </Button>
         </DialogContent>
       </Dialog>
 

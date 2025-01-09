@@ -1,21 +1,33 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { toast } from "react-toastify"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { fetchWithToken } from "@/lib/fetch_data"
-import { SE } from "@/lib/api"
-import { InspectType } from "@/enum/inspect_type"
-import { InspectData, WarningData, IncidentData, ImageData, PagingDoc } from "../doc_data"
-import { VStep1 } from "./_step_inspect/Step1"
-import { VStep2, NStep2 } from "./_step_inspect/Step2"
-import { NStep3 } from "./_step_inspect/Step3"
-import { ViewImage, ViewIncidentImage } from "./_modal2/ViewImage"
-import { ImageDeletionDialog } from "./_modal2/DeleteImage"
-import { DeleteIncident } from "./_modal2/DeleteIncident"
+import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { fetchWithToken } from "@/lib/fetch_data";
+import { SE } from "@/lib/api";
+import { InspectType } from "@/enum/inspect_type";
+import {
+  InspectData,
+  WarningData,
+  IncidentData,
+  ImageData,
+  PagingDoc,
+} from "../doc_data";
+import { VStep1 } from "./_step_inspect/Step1";
+import { VStep2, NStep2 } from "./_step_inspect/Step2";
+import { NStep3 } from "./_step_inspect/Step3";
+import { ViewImage, ViewIncidentImage } from "./_modal2/ViewImage";
+import { ImageDeletionDialog } from "./_modal2/DeleteImage";
+import { DeleteIncident } from "./_modal2/DeleteIncident";
 
 export default function UpdateInspectModal({
   inspectData,
@@ -23,12 +35,12 @@ export default function UpdateInspectModal({
   fetchData,
   currentPage,
 }: {
-  inspectData: InspectData
-  setAction: React.Dispatch<React.SetStateAction<string>>
-  fetchData: Function
-  currentPage: PagingDoc
+  inspectData: InspectData;
+  setAction: React.Dispatch<React.SetStateAction<string>>;
+  fetchData: Function;
+  currentPage: PagingDoc;
 }) {
-  const [images, setImages] = useState<Array<File>>([])
+  const [images, setImages] = useState<Array<File>>([]);
   const [warnings, setWarnings] = useState<Array<WarningData>>([
     {
       id: Math.random(),
@@ -40,24 +52,27 @@ export default function UpdateInspectModal({
       object: undefined,
       description: undefined,
     },
-  ])
+  ]);
 
-  const [act, setAct] = useState<string>("")
-  const [imageData, setImageData] = useState<ImageData | null>(null)
-  const [incident, setIncident] = useState<IncidentData | null>(null)
-  
-  const [currentStep, setCurrentStep] = useState("info")
-  const [disableSubmit, setDisableSubmit] = useState(true)
+  const [act, setAct] = useState<string>("");
+  const [imageData, setImageData] = useState<ImageData | null>(null);
+  const [incident, setIncident] = useState<IncidentData | null>(null);
+
+  const [currentStep, setCurrentStep] = useState("info");
+  const [disableSubmit, setDisableSubmit] = useState(true);
 
   function update(formData: FormData) {
-    const submitFormData = new FormData()
+    const submitFormData = new FormData();
 
-    submitFormData.append("doc_id", String(inspectData.id))
+    submitFormData.append("doc_id", String(inspectData.id));
     images.forEach((img) => {
-      submitFormData.append("images", img)
-    })
+      submitFormData.append("images", img);
+    });
 
-    if (warnings.length > 1 || (warnings.length === 1 && warnings[0].powerPole && warnings[0].image)) {
+    if (
+      warnings.length > 1 ||
+      (warnings.length === 1 && warnings[0].powerPole && warnings[0].image)
+    ) {
       submitFormData.append(
         "incident",
         JSON.stringify(
@@ -71,7 +86,7 @@ export default function UpdateInspectModal({
             incident: warning.description,
           }))
         )
-      )
+      );
     }
 
     submitFormData.append(
@@ -100,7 +115,7 @@ export default function UpdateInspectModal({
               suggest: formData.get("3")?.toString() || "",
             }
       )
-    )
+    );
 
     fetchWithToken(SE.API_WORKINSPECTUPDATE, {
       method: "POST",
@@ -108,44 +123,60 @@ export default function UpdateInspectModal({
       body: submitFormData,
     })
       .then((data) => {
-        if (data.message) toast.success(data.message)
-        setAction("")
-        fetchData(currentPage)
+        if (data.message) toast.success(data.message);
+        setAction("");
+        fetchData(currentPage);
       })
       .catch((e: Error) => {
-        if (e.message) toast.error(e.message)
-      })
+        if (e.message) toast.error(e.message);
+      });
   }
 
   useEffect(() => {
-    if (currentStep !== "report") return setDisableSubmit(true)
-    new Promise((resolve) => setTimeout(resolve, 10)).then(() => setDisableSubmit(false))
-  }, [currentStep])
+    if (currentStep !== "report") return setDisableSubmit(true);
+    new Promise((resolve) => setTimeout(resolve, 10)).then(() =>
+      setDisableSubmit(false)
+    );
+  }, [currentStep]);
 
   return (
     <>
       <Dialog open={true} onOpenChange={() => setAction("")}>
-        <DialogContent className="max-w-5xl">
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-center">
-              <Badge variant={inspectData.type === InspectType.Day ? "outline" : "secondary"} className="mb-2">
-                {inspectData.type === InspectType.Day ? "Phiếu kiểm tra ngày" : "Phiếu kiểm tra đêm"}
+              <Badge
+                variant={
+                  inspectData.type === InspectType.Day ? "outline" : "secondary"
+                }
+                className="mb-2"
+              >
+                {inspectData.type === InspectType.Day
+                  ? "Phiếu kiểm tra ngày"
+                  : "Phiếu kiểm tra đêm"}
               </Badge>
-              <div>Phiếu <span className="break-all font-mono">{inspectData.code}</span></div>
+              <div>
+                Phiếu{" "}
+                <span className="break-all font-mono">{inspectData.code}</span>
+              </div>
             </DialogTitle>
           </DialogHeader>
-          
-          <Tabs value={currentStep} onValueChange={setCurrentStep} className="w-full">
+
+          <Tabs
+            value={currentStep}
+            onValueChange={setCurrentStep}
+            className="w-full"
+          >
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="info">Thông tin</TabsTrigger>
               <TabsTrigger value="uploaded">Dữ liệu đã upload</TabsTrigger>
               <TabsTrigger value="abnormal">Bất thường</TabsTrigger>
               <TabsTrigger value="report">Báo cáo</TabsTrigger>
             </TabsList>
-            <TabsContent value="info">
+            <TabsContent value="info" className="overflow-y-auto">
               <VStep1 inspectData={inspectData} />
             </TabsContent>
-            <TabsContent value="uploaded">
+            <TabsContent value="uploaded" className="overflow-y-auto">
               <VStep2
                 inspectData={inspectData}
                 setImageData={setImageData}
@@ -154,7 +185,7 @@ export default function UpdateInspectModal({
                 del={true}
               />
             </TabsContent>
-            <TabsContent value="abnormal">
+            <TabsContent value="abnormal" className="overflow-y-auto">
               <NStep2
                 inspectData={inspectData}
                 images={images}
@@ -163,7 +194,7 @@ export default function UpdateInspectModal({
                 setWarnings={setWarnings}
               />
             </TabsContent>
-            <TabsContent value="report">
+            <TabsContent value="report" className="overflow-y-auto">
               <NStep3
                 id="finalStep"
                 inspectData={inspectData}
@@ -172,14 +203,14 @@ export default function UpdateInspectModal({
             </TabsContent>
           </Tabs>
 
-          <DialogFooter>
+          <DialogFooter className="sticky bottom-0 bg-white pt-4">
             <Button
               variant="outline"
               onClick={() => {
-                const steps = ["info", "uploaded", "abnormal", "report"]
-                const currentIndex = steps.indexOf(currentStep)
+                const steps = ["info", "uploaded", "abnormal", "report"];
+                const currentIndex = steps.indexOf(currentStep);
                 if (currentIndex > 0) {
-                  setCurrentStep(steps[currentIndex - 1])
+                  setCurrentStep(steps[currentIndex - 1]);
                 }
               }}
               disabled={currentStep === "info"}
@@ -189,10 +220,10 @@ export default function UpdateInspectModal({
             {currentStep !== "report" ? (
               <Button
                 onClick={() => {
-                  const steps = ["info", "uploaded", "abnormal", "report"]
-                  const currentIndex = steps.indexOf(currentStep)
+                  const steps = ["info", "uploaded", "abnormal", "report"];
+                  const currentIndex = steps.indexOf(currentStep);
                   if (currentIndex < steps.length - 1) {
-                    setCurrentStep(steps[currentIndex + 1])
+                    setCurrentStep(steps[currentIndex + 1]);
                   }
                 }}
               >
@@ -201,8 +232,8 @@ export default function UpdateInspectModal({
             ) : (
               <Button
                 type="submit"
+                className="bg-yellow-500 text-white"
                 form="finalStep"
-                variant="destructive"
                 disabled={disableSubmit}
               >
                 Chỉnh sửa
@@ -252,5 +283,5 @@ export default function UpdateInspectModal({
         />
       )}
     </>
-  )
+  );
 }

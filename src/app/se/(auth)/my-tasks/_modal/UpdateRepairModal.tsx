@@ -9,7 +9,13 @@ import { ViewImage } from "./_modal2/ViewImage";
 import { ImageDeletionDialog } from "./_modal2/DeleteImage";
 import { DeleteIncident } from "./_modal2/DeleteIncident";
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -30,7 +36,9 @@ export default function UpdateRepairModal({
   const [disableSubmit, setDisableSubmit] = useState(true);
   const [act, setAct] = useState<string>("");
   const [imageData, setImageData] = useState<ImageData | null>(null);
-  const [selectedPowers, setSelectedPowers] = useState<Array<{ value: string; label: string }>>([]);
+  const [selectedPowers, setSelectedPowers] = useState<
+    Array<{ value: string; label: string }>
+  >([]);
 
   function update(formData: FormData) {
     const submitFormData = new FormData();
@@ -41,7 +49,10 @@ export default function UpdateRepairModal({
     });
 
     if (selectedPowers.length > 0) {
-      submitFormData.append("powers", selectedPowers.map((pw) => pw.value).join(","));
+      submitFormData.append(
+        "powers",
+        selectedPowers.map((pw) => pw.value).join(",")
+      );
     }
 
     if (formData?.get("result"))
@@ -57,7 +68,7 @@ export default function UpdateRepairModal({
     })
       .then((data) => {
         if (data.message) toast.success(data.message);
-        setAction("")
+        setAction("");
         fetchData(currentPage);
       })
       .catch((e: Error) => {
@@ -75,41 +86,44 @@ export default function UpdateRepairModal({
   return (
     <>
       <Dialog open={true} onOpenChange={() => setAction("")}>
-        <DialogContent className="max-w-5xl">
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-center">
-              <Badge variant="outline" className="mb-2">Phiếu sửa chữa</Badge>
+              <Badge variant="outline" className="mb-2">
+                Phiếu sửa chữa
+              </Badge>
               <div className="text-2xl font-bold">
-                Phiếu <span className="break-all font-mono">{repairData.code}</span>
+                Phiếu{" "}
+                <span className="break-all font-mono">{repairData.code}</span>
               </div>
             </DialogTitle>
           </DialogHeader>
 
-          <Tabs value={`step-${currentStep}`} onValueChange={(value) => setCurrentStep(Number(value.split('-')[1]))}>
+          <Tabs
+            value={`step-${currentStep}`}
+            onValueChange={(value) =>
+              setCurrentStep(Number(value.split("-")[1]))
+            }
+          >
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="step-0">Thông tin</TabsTrigger>
               <TabsTrigger value="step-1">Dữ liệu đã upload</TabsTrigger>
               <TabsTrigger value="step-2">Báo cáo</TabsTrigger>
             </TabsList>
-            <TabsContent value="step-0">
-              <VStep1
-                // className="h-[calc(100dvh-20rem)] overflow-y-auto sm:grid-cols-2"
-                repairData={repairData}
-              />
+            <TabsContent value="step-0" className="overflow-y-auto">
+              <VStep1 repairData={repairData} />
             </TabsContent>
-            <TabsContent value="step-1">
+            <TabsContent value="step-1" className="overflow-y-auto">
               <VStep2
-                className="h-[calc(100dvh-20rem)] overflow-y-auto sm:grid-cols-2"
                 repairData={repairData}
                 setImageData={setImageData}
                 setAct={setAct}
                 del={true}
               />
             </TabsContent>
-            <TabsContent value="step-2">
+            <TabsContent value="step-2" className="overflow-y-auto">
               <NStep2
                 id="finalStep"
-                className="h-[calc(100dvh-20rem)] overflow-y-scroll"
                 repairData={repairData}
                 images={images}
                 setImages={setImages}
@@ -120,7 +134,7 @@ export default function UpdateRepairModal({
             </TabsContent>
           </Tabs>
 
-          <DialogFooter>
+          <DialogFooter className="sticky bottom-0 bg-white pt-4">
             <Button
               variant="outline"
               onClick={() => setCurrentStep(Math.max(currentStep - 1, 0))}
@@ -135,8 +149,8 @@ export default function UpdateRepairModal({
             ) : (
               <Button
                 type="submit"
+                className="bg-yellow-500"
                 form="finalStep"
-                variant="destructive"
                 disabled={disableSubmit}
               >
                 Chỉnh sửa

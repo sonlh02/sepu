@@ -73,15 +73,6 @@ export default function ViewRepairModal({
               Bước tiếp theo
             </Button>
           </div>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute right-4 top-4"
-            onClick={() => setAction("")}
-          >
-            <X className="h-4 w-4" />
-          </Button>
         </DialogContent>
       </Dialog>
 

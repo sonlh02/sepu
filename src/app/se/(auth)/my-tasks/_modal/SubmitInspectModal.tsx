@@ -226,21 +226,12 @@ export default function SubmitInspectModal({
               form="finalStep"
               variant="default"
               disabled={disableSubmit}
-              className="flex items-center bg-green-600 hover:bg-green-700"
+              className="flex items-center bg-purple-500"
             >
               Nộp phiếu <Send className="ml-2 h-4 w-4" />
             </Button>
           )}
         </div>
-
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute right-4 top-4 text-muted-foreground hover:text-foreground"
-          onClick={() => setAction("")}
-        >
-          <X className="h-4 w-4" />
-        </Button>
       </DialogContent>
     </Dialog>
   )

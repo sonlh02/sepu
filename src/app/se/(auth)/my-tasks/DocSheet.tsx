@@ -53,15 +53,15 @@ export function InspectSheet({
 
   const statusBadge = {
     [InspectStatus.Created]: <Badge variant="outline">Phiếu mới</Badge>,
-    [InspectStatus.Confirmed]: <Badge variant="secondary">Đã xác nhận</Badge>,
-    [InspectStatus.Ready]: <Badge>Thiết bị sẵn sàng</Badge>,
-    [InspectStatus.Submited]: <Badge variant="secondary">Đã nộp</Badge>,
+    [InspectStatus.Confirmed]: <Badge variant="confirmed">Đã xác nhận</Badge>,
+    [InspectStatus.Ready]: <Badge className="bg-green-500 text-white">Thiết bị sẵn sàng</Badge>,
+    [InspectStatus.Submited]: <Badge className="bg-purple-500 text-white">Đã nộp</Badge>,
     [InspectStatus.Approved]: <Badge variant="default">Đang ký duyệt</Badge>,
-    [InspectStatus.Completed]: <Badge variant="destructive">Đã hoàn thành</Badge>,
+    [InspectStatus.Completed]: <Badge className="bg-blue-800 text-white">Đã hoàn thành</Badge>,
   }[inspectData.status]
 
   return (
-    <Card className="w-64">
+    <Card className="w-full">
       <CardHeader className="p-4 pb-0 flex flex-row justify-between items-start">
         {statusBadge}
         <Button
@@ -120,7 +120,7 @@ export function InspectSheet({
         
         <div className="mt-4 flex justify-center">
           {tab == "index" && category == "task" && inspectData.status === InspectStatus.Created ? (
-            <Button onClick={() => setAction("i-confirm")}>Xác nhận</Button>
+            <Button className="bg-blue-500 text-white" onClick={() => setAction("i-confirm")}>Xác nhận</Button>
           ) : null}
 
           {tab == "index" && category == "task" && isme
@@ -129,7 +129,7 @@ export function InspectSheet({
             && (inspectData.flycams.length === 0 || inspectData.flycams.filter((fc) => !fc.activity).length === 0) ? (
             <Button
               type="button"
-              className="btn btn-quaternary text-white"
+              className="bg-green-500 text-white"
               onClick={() => setAction("i-checkdv")}
             >
               KT thiết bị
@@ -149,7 +149,7 @@ export function InspectSheet({
             && inspectData.status === InspectStatus.Ready ? (
             <Button
               type="button"
-              className="btn btn-secondary text-white"
+              className="bg-purple-500 text-white"
               onClick={() => setAction("i-submit")}
             >
               Gửi phiếu
@@ -160,7 +160,7 @@ export function InspectSheet({
             && inspectData.status === InspectStatus.Submited ? (
             <Button
               type="button"
-              className="btn btn-warning text-white"
+              className="bg-yellow-500 text-white"
               onClick={() => setAction("i-update")}
             >
               Chỉnh sửa
@@ -186,14 +186,14 @@ export function InspectSheet({
             <div>
               <Button
                 type="button"
-                className="btn btn-warning text-white"
+                className="bg-yellow-500 text-white"
                 onClick={() => setAction("i-update")}
               >
                 Chỉnh sửa
               </Button>
               <Button
                 type="button"
-                className="btn btn-primary text-white ml-4"
+                className="bg-blue-800 text-white ml-4"
                 onClick={() => setAction("i-approval")}
               >
                 Ký duyệt
@@ -298,14 +298,14 @@ export function RepairSheet({
 
   const statusBadge = {
     [RepairStatus.Created]: <Badge variant="outline">Phiếu mới</Badge>,
-    [RepairStatus.Confirmed]: <Badge variant="secondary">Đã nhận phiếu</Badge>,
-    [RepairStatus.Submited]: <Badge variant="secondary">Đã nộp phiếu</Badge>,
+    [RepairStatus.Confirmed]: <Badge className="bg-blue-500">Đã nhận phiếu</Badge>,
+    [RepairStatus.Submited]: <Badge className="bg-purple-500">Đã nộp phiếu</Badge>,
     [RepairStatus.Approved]: <Badge variant="default">Đang ký duyệt</Badge>,
-    [RepairStatus.Completed]: <Badge variant="destructive">Đã hoàn thành</Badge>,
+    [RepairStatus.Completed]: <Badge className="bg-blue-800">Đã hoàn thành</Badge>,
   }[repairData.status]
 
   return (
-    <Card className="w-64">
+    <Card className="w-full">
       <CardHeader className="p-4 pb-0 flex flex-row justify-between items-start">
         {statusBadge}
         <Button
@@ -348,15 +348,15 @@ export function RepairSheet({
       </CardContent>
       <CardFooter className="p-4 pt-0">
         {tab == "index" && category == "task" && repairData.status === RepairStatus.Created && (
-          <Button onClick={() => setAction("r-confirm")} className="w-full">Xác nhận</Button>
+          <Button onClick={() => setAction("r-confirm")} className="w-full bg-blue-500">Xác nhận</Button>
         )}
 
         {tab == "index" && category == "task" && isme && repairData.status === RepairStatus.Confirmed && (
-          <Button onClick={() => setAction("r-submit")} className="w-full">Gửi phiếu</Button>
+          <Button onClick={() => setAction("r-submit")} className="w-full bg-purple-500">Gửi phiếu</Button>
         )}
 
         {tab == "index" && category == "task" && isme && repairData.status === RepairStatus.Submited && (
-          <Button onClick={() => setAction("r-update")} className="w-full">Chỉnh sửa</Button>
+          <Button onClick={() => setAction("r-update")} className="w-full bg-yellow-500">Chỉnh sửa</Button>
         )}
 
         {tab == "index" && category == "task" && isme && repairData.status === RepairStatus.Approved && (
@@ -370,8 +370,8 @@ export function RepairSheet({
         {tab == "index" && category == "approval" && !issign &&
          (repairData.status === RepairStatus.Submited || repairData.status === RepairStatus.Approved) && (
           <div className="flex gap-2 w-full">
-            <Button onClick={() => setAction("r-update")} className="flex-1">Chỉnh sửa</Button>
-            <Button onClick={() => setAction("r-approval")} className="flex-1">Ký duyệt</Button>
+            <Button onClick={() => setAction("r-update")} className="flex-1 bg-yellow-500">Chỉnh sửa</Button>
+            <Button onClick={() => setAction("r-approval")} className="flex-1 bg-blue-800">Ký duyệt</Button>
           </div>
         )}
 

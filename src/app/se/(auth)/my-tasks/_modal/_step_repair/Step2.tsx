@@ -149,7 +149,7 @@ export function NStep2({
       {/* Repair Result Section */}
       <div className="space-y-4">
         <label className="block text-sm font-medium">Kết quả sửa chữa</label>
-        <Textarea defaultValue={repairData.result} />
+        <Textarea name="result" defaultValue={repairData.result} />
 
         <label className="block text-sm font-medium">Vấn đề còn tồn tại</label>
         <Textarea defaultValue={repairData.unresolved} />

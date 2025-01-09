@@ -26,15 +26,6 @@ export function ViewImage({
       <DialogContent className="max-w-7xl">
         <DialogHeader>
           <DialogTitle>{imageData.name}</DialogTitle>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute right-4 top-4"
-            onClick={handleClose}
-          >
-            <X className="h-4 w-4" />
-            <span className="sr-only">Close</span>
-          </Button>
         </DialogHeader>
         <div className="relative">
           <Image
@@ -82,15 +73,6 @@ export function ViewIncidentImage({
   return (
     <Dialog open={!!incident} onOpenChange={handleClose}>
       <DialogContent className="max-w-7xl">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute right-4 top-4"
-          onClick={handleClose}
-        >
-          <X className="h-4 w-4" />
-          <span className="sr-only">Close</span>
-        </Button>
         <Image
           className="w-full h-auto border"
           src={`${process.env.NEXT_PUBLIC_API_URL}/${incident.path}`}

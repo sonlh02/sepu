@@ -47,7 +47,7 @@ export default function ConfirmInspectModal({
 
   return (
     <div className={`fixed inset-0 z-50 bg-background/80 backdrop-blur-sm ${className}`}>
-      <div className="fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 sm:rounded-lg md:w-full">
+      <div className="fixed left-[50%] top-[50%] z-50 grid w-full max-w-xl translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 sm:rounded-lg md:w-full">
         <div className="flex flex-col space-y-1.5 text-center">
           <Badge 
             variant={inspectData.type === InspectType.Day ? "default" : "secondary"}
@@ -86,22 +86,12 @@ export default function ConfirmInspectModal({
             <Button 
               type="submit" 
               variant="default"
-              className="bg-primary text-primary-foreground hover:bg-primary/90"
+              className="bg-blue-500 text-primary-foreground hover:bg-primary/90"
             >
               Nhận phiếu
             </Button>
           </div>
         </form>
-        <Button
-          type="button"
-          variant="ghost"
-          size="icon"
-          className="absolute right-4 top-4 hover:bg-secondary"
-          onClick={handleClose}
-        >
-          <X className="h-4 w-4" />
-          <span className="sr-only">Đóng</span>
-        </Button>
       </div>
     </div>
   )

@@ -126,19 +126,10 @@ export default function CheckDvInspectModal({
           <Button variant="outline" onClick={() => setAction("")}>
             Hủy
           </Button>
-          <Button onClick={check}>
+          <Button className="bg-green-500 text-white" onClick={check}>
             {inspectData.workstations.length === 0 && inspectData.flycams.length === 0 ? "Không có thiết bị đính kèm" : "Xác nhận"}
           </Button>
         </DialogFooter>
-
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute right-4 top-4"
-          onClick={() => setAction("")}
-        >
-          <X className="h-4 w-4" />
-        </Button>
       </DialogContent>
     </Dialog>
   )
