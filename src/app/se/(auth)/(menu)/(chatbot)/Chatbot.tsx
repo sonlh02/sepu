@@ -101,7 +101,7 @@ const ChatBot: React.FC = () => {
       const response = await fetch("https://chatbot-hson-a23aa387e43b.herokuapp.com/ask_question/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: input }),
+        body: JSON.stringify({ question: input, username: username }),
       });
 
       if (!response.ok) {
