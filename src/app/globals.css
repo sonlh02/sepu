@@ -78,6 +78,10 @@ input:focus {
   user-select: none; /* Ngăn chặn việc chọn văn bản khi focus */
 }
 
+.no-wrap {
+  white-space: nowrap;
+}
+
 @media print {
 	@page {
 	  size: A4;

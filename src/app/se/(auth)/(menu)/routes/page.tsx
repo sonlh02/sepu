@@ -439,7 +439,7 @@ export default function Routes() {
                                   size="icon"
                                   onClick={() => setEditingData(powerline)}
                                 >
-                                  <Edit className="h-4 w-4" />
+                                  <Edit className="h-4 w-4 text-yellow-500" />
                                 </Button>
                               </TooltipTrigger>
                               <TooltipContent>Sửa</TooltipContent>
@@ -453,7 +453,7 @@ export default function Routes() {
                                   size="icon"
                                   onClick={() => setDeletingData(powerline)}
                                 >
-                                  <Trash className="h-4 w-4" />
+                                  <Trash className="h-4 w-4 text-red-500" />
                                 </Button>
                               </TooltipTrigger>
                               <TooltipContent>Xóa</TooltipContent>

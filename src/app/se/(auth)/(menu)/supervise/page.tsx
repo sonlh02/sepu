@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { StompSessionProvider, useSubscription } from "react-stomp-hooks";
 import { LatLngExpression } from "leaflet";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 // load lib
 import menubar from "@/lib/menu";
 // load config
@@ -17,7 +17,7 @@ import { fetchLines } from "./fetch_lines";
 import { timeDisplay, RouteRaw, UavData } from "./map_data";
 
 import UserDontAccessPage from "@/component/NotAllow";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 const ModeSupervise = dynamic(() => import("./ModeSupervise"), { ssr: false });
 const ModeUav = dynamic(() => import("./ModeUav"), { ssr: false });
 
@@ -39,7 +39,7 @@ const mapModes = [
   },
 ];
 
-const stompSessionProviderUrl = `${process.env.NEXT_PUBLIC_API_URL}:8005/api/a/powerline/ws`;
+const stompSessionProviderUrl = `${process.env.NEXT_PUBLIC_WS_ENDPOINT}/api/na/powerline/ws`;
 
 type SuperviseRawData = {
   messageType: string;
@@ -57,9 +57,7 @@ export default function Supervise() {
   const [userWright, setUserWright] = useState<UserWright | null>(null);
 
   useEffect(() => {
-    setUserWright(
-      menubar("map") ? UserWright.Write : UserWright.None
-    );
+    setUserWright(menubar("map") ? UserWright.Write : UserWright.None);
   }, []);
 
   if (!userWright) return null;
@@ -71,40 +69,46 @@ export default function Supervise() {
       <SuperviseSubscribing mode={currentMode} />
 
       <div className="absolute bottom-4 z-10 p-3">
-      <Tabs
-        value={currentMode}
-        onValueChange={(value) => setCurrentMode(value as typeof currentMode)}
-      >
-        <TabsList>
-          <TabsTrigger 
-            value={MapMode.Supervise} 
-            className={`tab data-[state=active]:bg-black data-[state=active]:text-white gap-2 text-xs w-32 h-12 ${currentMode === MapMode.Supervise ? "tab-active" : ""}`}
-          >
-            Giám sát
-          </TabsTrigger>
-          <TabsTrigger 
-            value={MapMode.Uav} 
-            className={`tab data-[state=active]:bg-black data-[state=active]:text-white gap-2 text-xs w-32 h-12 ${currentMode === MapMode.Uav ? "tab-active" : ""}`}
-          >
-            Đường bay
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
-    </div>
+        <Tabs
+          value={currentMode}
+          onValueChange={(value) => setCurrentMode(value as typeof currentMode)}
+        >
+          <TabsList>
+            <TabsTrigger
+              value={MapMode.Supervise}
+              className={`tab data-[state=active]:bg-black data-[state=active]:text-white gap-2 text-xs w-32 h-12 ${
+                currentMode === MapMode.Supervise ? "tab-active" : ""
+              }`}
+            >
+              Giám sát
+            </TabsTrigger>
+            <TabsTrigger
+              value={MapMode.Uav}
+              className={`tab data-[state=active]:bg-black data-[state=active]:text-white gap-2 text-xs w-32 h-12 ${
+                currentMode === MapMode.Uav ? "tab-active" : ""
+              }`}
+            >
+              Đường bay
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+      </div>
     </StompSessionProvider>
   );
 }
 
-function SuperviseSubscribing({mode}: {mode:MapMode}) {
-  const [routes, setRoutes] = useState<{[key: string]: string;}>({});
+function SuperviseSubscribing({ mode }: { mode: MapMode }) {
+  const [routes, setRoutes] = useState<{ [key: string]: string }>({});
   const [lines, setLines] = useState<Array<RouteRaw>>([]);
   const [uavs, setUavs] = useState<{ [key: string]: UavData }>({});
-  const [uavLines, setUavLines] = useState<{ [key: string]: Array<UavData> }>({});
+  const [uavLines, setUavLines] = useState<{ [key: string]: Array<UavData> }>(
+    {}
+  );
 
   useSubscription("/topic/public", (message) => {
     const messageData: SuperviseRawData = JSON.parse(message.body);
 
-    const docuav = messageData.docId+"/"+messageData.uav;
+    const docuav = messageData.docId + "/" + messageData.uav;
     const currentData: UavData = {
       time: new Date().getTime() + timeDisplay,
       locationName: messageData.locationName,
@@ -129,7 +133,7 @@ function SuperviseSubscribing({mode}: {mode:MapMode}) {
     fetchRoutes()
       .then((response) => setRoutes(response))
       .catch((e: Error) => {
-        if(e.message) toast.error(e.message);
+        if (e.message) toast.error(e.message);
       });
   }, []);
 
@@ -139,43 +143,34 @@ function SuperviseSubscribing({mode}: {mode:MapMode}) {
       fetchLines(routeId)
         .then((response) => setLines((lines) => [...lines, ...response]))
         .catch((e: Error) => {
-          if(e.message) toast.error(e.message);
+          if (e.message) toast.error(e.message);
         });
-    })
+    });
   }, [routes]);
 
   useEffect(() => {
-    if(mode === MapMode.Supervise && Object.keys(uavs).length > 0) {
+    if (mode === MapMode.Supervise && Object.keys(uavs).length > 0) {
       const interval = setInterval(() => {
         let arrUav: any = {};
         Object.keys(uavs).map((key) => {
-          if(new Date().getTime() <= (uavs[key]?.time || 0))
+          if (new Date().getTime() <= (uavs[key]?.time || 0))
             arrUav[key] = uavs[key];
         });
-          
+
         setUavs(arrUav);
       }, timeDisplay);
       return () => clearInterval(interval);
     }
-  }, [uavs, mode])
+  }, [uavs, mode]);
 
   return (
     <div className="relative flex size-full">
       {mode === MapMode.Supervise && (
-        <ModeSupervise 
-          routes={routes}
-          lines={lines}
-          uavs={uavs}
-        />
+        <ModeSupervise routes={routes} lines={lines} uavs={uavs} />
       )}
 
       {mode === MapMode.Uav && (
-        <ModeUav
-          routes={routes}
-          lines={lines}
-          uavs={uavs}
-          setUavs={setUavs}
-        />
+        <ModeUav routes={routes} lines={lines} uavs={uavs} setUavs={setUavs} />
       )}
     </div>
   );

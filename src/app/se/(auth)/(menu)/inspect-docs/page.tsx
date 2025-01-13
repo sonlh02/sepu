@@ -22,7 +22,7 @@ import {
   Trash2,
   Eye,
   Printer,
-  FileSpreadsheet,
+  Download,
 } from "lucide-react";
 
 import { InspectData } from "./inspect_data";
@@ -326,21 +326,24 @@ export default function InspectDocs() {
   }
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="text-2xl font-bold">
+    <div className="space-y-6 p-2">
+      <div className="flex justify-between items-center p-1">
+        <h1 className="text-3xl font-bold tracking-tight p-1">
           Danh sách phiếu kiểm tra
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            search(new FormData(e.currentTarget));
-          }}
-          className="space-y-4"
-        >
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 bg-stone-200 p-2 rounded">
+        </h1>
+      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Tìm kiếm</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              search(new FormData(e.currentTarget));
+            }}
+            className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6"
+          >
             <div className="space-y-2">
               <label className="text-sm font-medium">Ngày bắt đầu</label>
               <Input type="date" name="dateInspect" />
@@ -390,20 +393,29 @@ export default function InspectDocs() {
                 Tìm kiếm
               </Button>
             </div>
-          </div>
-        </form>
+          </form>
+        </CardContent>
+      </Card>
 
-        <Separator className="my-6" />
+      <div className="justify-between items-center">
+        <div className="flex space-x-2">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" onClick={exportExcel}>
+                  <Download className="mr-2 h-4 w-4" />
+                  Xuất báo cáo
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Xuất báo cáo Excel</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
 
-        <div className="flex justify-between items-center mb-4">
-          <div className="flex items-center space-x-2">
-            <Button onClick={exportExcel} variant="outline">
-              <FileSpreadsheet className="mr-2 h-4 w-4" />
-              Xuất báo cáo
-            </Button>
-            <span className="text-sm text-muted-foreground">Tổng: {total}</span>
-          </div>
-
+        <div className="flex items-center justify-between">
+          <div className="font-medium">Tổng số: {total}</div>
           {userWright === UserWright.Write && (
             <div className="space-x-2">
               <Button asChild variant="outline">
@@ -419,15 +431,17 @@ export default function InspectDocs() {
             </div>
           )}
         </div>
+      </div>
 
-        <div className="rounded-md border">
+      <Card>
+        <CardContent className="p-0">
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead className="w-[50px]">STT</TableHead>
                 <TableHead>Mã phiếu</TableHead>
                 <TableHead>Loại phiếu</TableHead>
-                <TableHead>Ngày kiểm tra</TableHead>
+                <TableHead className="no-wrap">Ngày kiểm tra</TableHead>
                 <TableHead>Đội kiểm tra</TableHead>
                 <TableHead>PTKT</TableHead>
                 <TableHead>Trạng thái</TableHead>
@@ -437,10 +451,10 @@ export default function InspectDocs() {
             <TableBody>
               {inspects.map((inspect, index) => (
                 <TableRow key={inspect.id}>
-                  <TableCell className="font-medium">{index + 1}</TableCell>
+                  <TableCell>{index + 1}</TableCell>
                   <TableCell>
                     <div className="font-semibold">{inspect.code}</div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-sm text-muted-foreground no-wrap">
                       Tuyến: {inspect.powerline.code} ({inspect.powerline.name})
                     </div>
                     <div className="text-sm text-muted-foreground">
@@ -455,6 +469,7 @@ export default function InspectDocs() {
                           ? "secondary"
                           : "default"
                       }
+                      className="no-wrap"
                     >
                       {inspect.type === InspectType.Day
                         ? "Phiếu ngày"
@@ -467,13 +482,15 @@ export default function InspectDocs() {
                   <TableCell>
                     <ul className="list-disc list-inside">
                       {inspect.workers.map((worker, index) => (
-                        <li key={index} className="text-sm">
+                        <li key={index} className="text-sm no-wrap">
                           {worker.name}
                         </li>
                       ))}
                     </ul>
                   </TableCell>
-                  <TableCell>{inspect.inspectMethod}</TableCell>
+                  <TableCell className="no-wrap">
+                    {inspect.inspectMethod}
+                  </TableCell>
                   <TableCell>
                     <Badge
                       variant={
@@ -491,16 +508,16 @@ export default function InspectDocs() {
                       }
                       className={
                         inspect.status === InspectStatus.Created
-                          ? "bg-gray-100 text-gray-800"
+                          ? "bg-gray-500 text-white no-wrap"
                           : inspect.status === InspectStatus.Confirmed
-                          ? "bg-blue-100 text-blue-800"
+                          ? "bg-blue-500 text-white no-wrap"
                           : inspect.status === InspectStatus.Ready
-                          ? "bg-cyan-100 text-cyan-800"
+                          ? "bg-green-500 text-white no-wrap"
                           : inspect.status === InspectStatus.Submited
-                          ? "bg-yellow-100 text-yellow-800"
+                          ? "bg-purple-500 text-white no-wrap"
                           : inspect.status === InspectStatus.Approved
-                          ? "bg-red-100 text-red-800"
-                          : "bg-green-100 text-green-800"
+                          ? "bg-yellow-500 text-white no-wrap"
+                          : "bg-blue-800 text-white no-wrap"
                       }
                     >
                       {
@@ -515,134 +532,136 @@ export default function InspectDocs() {
                       }
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-right">
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button variant="ghost" size="icon" asChild>
-                            <Link
-                              href={`${Nav.INSPECTDOC_VIEW_PAGE}/${inspect.id}`}
-                            >
-                              <Eye className="h-4 w-4" />
-                            </Link>
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>Xem</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-
-                    {userWright === UserWright.Write &&
-                      [
-                        InspectStatus.Created,
-                        InspectStatus.Confirmed,
-                        InspectStatus.Ready,
-                      ].includes(inspect.status) && (
-                        <>
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button variant="ghost" size="icon" asChild>
-                                  <Link
-                                    href={`${Nav.INSPECTDOC_EDIT_PAGE}/${inspect.id}`}
-                                  >
-                                    <Edit className="h-4 w-4" />
-                                  </Link>
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>Sửa</TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  onClick={() => setDeletingData(inspect)}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>Xóa</TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        </>
-                      )}
-
-                    {[InspectStatus.Completed].includes(inspect.status) && (
+                  <TableCell className="text-right no-wrap">
+                    <div className="flex justify-end space-x-2">
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button variant="ghost" size="icon" asChild>
                               <Link
-                                href={`${Nav.INSPECTDOC_PRINT_PAGE}/${inspect.id}`}
-                                target="_blank"
+                                href={`${Nav.INSPECTDOC_VIEW_PAGE}/${inspect.id}`}
                               >
-                                <Printer className="h-4 w-4" />
+                                <Eye className="h-4 w-4" />
                               </Link>
                             </Button>
                           </TooltipTrigger>
-                          <TooltipContent>In</TooltipContent>
+                          <TooltipContent>Xem</TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
-                    )}
+
+                      {userWright === UserWright.Write &&
+                        [
+                          InspectStatus.Created,
+                          InspectStatus.Confirmed,
+                          InspectStatus.Ready,
+                        ].includes(inspect.status) && (
+                          <>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button variant="ghost" size="icon" asChild>
+                                    <Link
+                                      href={`${Nav.INSPECTDOC_EDIT_PAGE}/${inspect.id}`}
+                                    >
+                                      <Edit className="h-4 w-4 text-yellow-500" />
+                                    </Link>
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Sửa</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => setDeletingData(inspect)}
+                                  >
+                                    <Trash2 className="h-4 w-4 text-red-500" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Xóa</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </>
+                        )}
+
+                      {[InspectStatus.Completed].includes(inspect.status) && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button variant="ghost" size="icon" asChild>
+                                <Link
+                                  href={`${Nav.INSPECTDOC_PRINT_PAGE}/${inspect.id}`}
+                                  target="_blank"
+                                >
+                                  <Printer className="h-4 w-4 text-blue-500" />
+                                </Link>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>In</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
-        </div>
+        </CardContent>
+      </Card>
 
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <span className="text-sm font-medium">Số bản ghi mỗi trang:</span>
-            <Select
-              value={String(limit)}
-              onValueChange={(value) => {
-                setCurrentPage(1);
-                setLimit(Number(value));
-              }}
-            >
-              <SelectTrigger className="w-[70px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {[20, 50, 100].map((limitOption) => (
-                  <SelectItem key={limitOption} value={String(limitOption)}>
-                    {limitOption}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <Pagination
-            pages={Math.ceil(total / limit)}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-          />
-          <div className="w-20 lg:w-40" />
-        </div>
-
-        {deletingData && (
-          <DeleteConfirm
-            className="modal-open"
-            title={`Xóa phiếu: ${deletingData.code}?`}
-            setIsDeleteConfirmModalShow={setDeletingData}
-            deleteFunction={() => {
-              fetchWithToken(`${SE.API_INSPECTDOC}/${deletingData.id}`, {
-                method: "DELETE",
-              })
-                .then((data) => {
-                  if (data.message) toast.success(data.message);
-                  fetchData(params, limit, currentPage);
-                })
-                .catch((e: Error) => {
-                  if (e.message) toast.error(e.message);
-                });
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <span className="text-sm font-medium">Số bản ghi mỗi trang:</span>
+          <Select
+            value={String(limit)}
+            onValueChange={(value) => {
+              setCurrentPage(1);
+              setLimit(Number(value));
             }}
-          />
-        )}
-      </CardContent>
-    </Card>
+          >
+            <SelectTrigger className="w-[70px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {[20, 50, 100].map((limitOption) => (
+                <SelectItem key={limitOption} value={String(limitOption)}>
+                  {limitOption}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <Pagination
+          pages={Math.ceil(total / limit)}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+        <div className="w-20 lg:w-40" />
+      </div>
+
+      {deletingData && (
+        <DeleteConfirm
+          className="modal-open"
+          title={`Xóa phiếu: ${deletingData.code}?`}
+          setIsDeleteConfirmModalShow={setDeletingData}
+          deleteFunction={() => {
+            fetchWithToken(`${SE.API_INSPECTDOC}/${deletingData.id}`, {
+              method: "DELETE",
+            })
+              .then((data) => {
+                if (data.message) toast.success(data.message);
+                fetchData(params, limit, currentPage);
+              })
+              .catch((e: Error) => {
+                if (e.message) toast.error(e.message);
+              });
+          }}
+        />
+      )}
+    </div>
   );
 }
