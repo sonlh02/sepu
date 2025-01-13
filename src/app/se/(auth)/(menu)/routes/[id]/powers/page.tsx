@@ -1,28 +1,28 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from "react"
-import { useParams } from 'next/navigation'
-import { LatLngExpression } from "leaflet"
-import { toast } from "react-toastify"
-import Moment from "moment"
-import * as XLSX from 'xlsx'
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { LatLngExpression } from "leaflet";
+import { toast } from "react-toastify";
+import Moment from "moment";
+import * as XLSX from "xlsx";
 
-import { fetchWithToken } from "@/lib/fetch_data"
-import { SE } from "@/lib/api"
-import menubar from "@/lib/menu"
+import { fetchWithToken } from "@/lib/fetch_data";
+import { SE } from "@/lib/api";
+import menubar from "@/lib/menu";
 
-import { UserWright } from "@/enum/user_wright"
-import { Status } from "@/enum/status"
+import { UserWright } from "@/enum/user_wright";
+import { Status } from "@/enum/status";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -30,25 +30,25 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
+} from "@/components/ui/tooltip";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
-import { Search, Plus, Edit, Trash, Eye, Download } from "lucide-react"
-import NewPowerModal from "./NewPowerModal"
-import ViewPowerModal from "./ViewPowerModal"
-import EditPowerModal from "./EditPowerModal"
-import UserDontAccessPage from "@/component/NotAllow"
-import Pagination from "@/app/se/(auth)/Pagination"
-import DeleteConfirm from "@/app/se/(auth)/(menu)/_modal/DeleteConfirm"
-import { cn } from "@/lib/utils"
+import { Search, Plus, Edit, Trash, Eye, Download } from "lucide-react";
+import NewPowerModal from "./NewPowerModal";
+import ViewPowerModal from "./ViewPowerModal";
+import EditPowerModal from "./EditPowerModal";
+import UserDontAccessPage from "@/component/NotAllow";
+import Pagination from "@/app/se/(auth)/Pagination";
+import DeleteConfirm from "@/app/se/(auth)/(menu)/_modal/DeleteConfirm";
+import { cn } from "@/lib/utils";
 
 type PowerPolesRawData = {
   data: {
@@ -120,7 +120,7 @@ export type ReferenceData = {
 };
 
 export default function Powers() {
-  const url: {id: string} = useParams();
+  const url: { id: string } = useParams();
   const [userWright, setUserWright] = useState<UserWright | null>(null);
   const [powerlineName, setPowerlineName] = useState("");
   const [powerlineCode, setPowerlineCode] = useState("");
@@ -141,17 +141,24 @@ export default function Powers() {
   const route = url.id;
 
   const exportExcel = () => {
-    fetchWithToken(`${SE.API_ROUTE}/${route}/power/report?${new URLSearchParams(params)}`)
+    fetchWithToken(
+      `${SE.API_ROUTE}/${route}/power/report?${new URLSearchParams(params)}`
+    )
       .then((data) => {
         const worksheet = XLSX.utils.json_to_sheet(data.data);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Cột");
-        XLSX.writeFile(workbook, `DanhSachCotTuyen${powerlineCode}_${Moment(new Date()).format("DD-MM-YYYY")}.xlsx`);
+        XLSX.writeFile(
+          workbook,
+          `DanhSachCotTuyen${powerlineCode}_${Moment(new Date()).format(
+            "DD-MM-YYYY"
+          )}.xlsx`
+        );
       })
       .catch((e: Error) => {
-        if(e.message) toast.error(e.message);
+        if (e.message) toast.error(e.message);
       });
-  }
+  };
 
   function fetchData(route: string, params: any, limit: number, page: number) {
     params.limit = String(limit);
@@ -202,7 +209,7 @@ export default function Powers() {
         setTotal(data.data.total);
       })
       .catch((e: Error) => {
-        if(e.message) toast.error(e.message);
+        if (e.message) toast.error(e.message);
       });
   }
 
@@ -219,15 +226,15 @@ export default function Powers() {
         return successFunction();
       })
       .catch((e: Error) => {
-        if(e.message) toast.error(e.message);
+        if (e.message) toast.error(e.message);
       });
   }
 
   useEffect(() => {
-    if(menubar("route")) {
+    if (menubar("route")) {
       setUserWright(UserWright.Write);
       fetchData(url.id, params, limit, currentPage);
-    } else if(menubar("route-view")) {
+    } else if (menubar("route-view")) {
       setUserWright(UserWright.Read);
       fetchData(url.id, params, limit, currentPage);
     } else {
@@ -235,32 +242,37 @@ export default function Powers() {
     }
   }, [url, params, limit, currentPage]);
 
-  if (!userWright) return null
-  if (userWright === UserWright.None) return <UserDontAccessPage />
+  if (!userWright) return null;
+  if (userWright === UserWright.None) return <UserDontAccessPage />;
 
   function search(formData: FormData) {
-    const searchParams = Object.fromEntries(formData)
-    if (searchParams.status === 'all') {
-      delete searchParams.status
+    const searchParams = Object.fromEntries(formData);
+    if (searchParams.status === "all") {
+      delete searchParams.status;
     }
-    setParams(searchParams)
+    setParams(searchParams);
   }
 
   return (
-    <div className="container mx-auto py-6 space-y-8">
+    <div className="space-y-6 p-2">
+      <div className="flex justify-between items-center p-1">
+        <h1 className="text-3xl font-bold tracking-tight p-1">
+          Danh sách cột {powerlineName && `(${powerlineName})`}
+        </h1>
+      </div>
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-2xl font-bold">Danh sách cột {powerlineName && `(${powerlineName})`}</CardTitle>
-          <Badge variant="outline" className="text-sm font-medium">
-            Tổng: {total}
-          </Badge>
+        <CardHeader>
+          <CardTitle>Tìm kiếm</CardTitle>
         </CardHeader>
         <CardContent>
-          <form className="flex flex-wrap gap-4 items-center mb-6" action={search}>
-            <Input name="name" placeholder="Tên cột" className="max-w-xs" />
-            <Input name="code" placeholder="Mã cột" className="max-w-xs" />
+          <form
+            className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+            action={search}
+          >
+            <Input name="name" placeholder="Tên cột" />
+            <Input name="code" placeholder="Mã cột" />
             <Select name="status">
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger>
                 <SelectValue placeholder="Trạng thái" />
               </SelectTrigger>
               <SelectContent>
@@ -270,160 +282,194 @@ export default function Powers() {
                 <SelectItem value="3">Báo động</SelectItem>
               </SelectContent>
             </Select>
-            <Button type="submit" variant="secondary">
-              <Search className="mr-2 h-4 w-4" />
-              Tìm kiếm
+            <Button type="submit" className="w-24">
+              <Search className="mr-2 h-4 w-4" /> Tìm kiếm
             </Button>
           </form>
-
-          <div className="flex justify-between items-center mb-4">
-            <Button variant="outline" onClick={exportExcel}>
-              <Download className="mr-2 h-4 w-4" />
-              Xuất báo cáo
-            </Button>
-            {userWright === UserWright.Write && (
-              <Button onClick={() => fetchReferenceData(() => setIsNewModalShow(true))}>
-                <Plus className="mr-2 h-4 w-4" /> Thêm cột
-              </Button>
-            )}
-          </div>
-
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[80px]">STT</TableHead>
-                  <TableHead>Tên</TableHead>
-                  <TableHead>Mã cột</TableHead>
-                  <TableHead>Tọa độ</TableHead>
-                  <TableHead>Trạng thái</TableHead>
-                  <TableHead className="text-right">Hành động</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {powerPoles.map((powerPole, index) => (
-                  <TableRow key={powerPole.id}>
-                    <TableCell className="font-medium">{index + 1}</TableCell>
-                    <TableCell>{powerPole.name}</TableCell>
-                    <TableCell>{powerPole.code}</TableCell>
-                    <TableCell>
-                      <div className="flex flex-col">
-                        {Object.entries(powerPole.coordinates).map(
-                          ([numberType, number]) => (
-                            <span className="font-mono text-sm" key={numberType}>
-                              {number}
-                            </span>
-                          )
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge 
-                        variant={powerPole.activity === Status.Error ? "destructive" : "outline"}
-                        className={cn(
-                          powerPole.activity === Status.Okay && "border-green-500 bg-green-50 text-green-700",
-                          powerPole.activity === Status.Warning && "border-yellow-500 bg-yellow-50 text-yellow-700"
-                        )}
-                      >
-                        {
-                          {
-                            [Status.Okay]: 'Bình thường',
-                            [Status.Warning]: 'Cảnh báo',
-                            [Status.Error]: 'Báo động',
-                          }[powerPole.activity]
-                        }
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Button variant="ghost" size="icon" onClick={() => setViewingData(powerPole)}>
-                                <Eye className="h-4 w-4" />
-                              </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Xem</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-
-                        {userWright === UserWright.Write && (
-                          <>
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button variant="ghost" size="icon" onClick={() => fetchReferenceData(() => setEditingData(powerPole))}>
-                                    <Edit className="h-4 w-4" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Sửa</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button variant="ghost" size="icon" onClick={() => setDeletingData(powerPole)}>
-                                    <Trash className="h-4 w-4" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Xóa</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          </>
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-
-          <div className="flex items-center justify-between mt-4">
-            <div className="flex items-center space-x-2">
-              <p className="text-sm font-medium">Hiển thị</p>
-              <Select
-                value={limit.toString()}
-                onValueChange={(value) => {
-                  setCurrentPage(1)
-                  setLimit(Number(value))
-                }}
-              >
-                <SelectTrigger className="w-[70px]">
-                  <SelectValue placeholder="20" />
-                </SelectTrigger>
-                <SelectContent>
-                  {[20, 50, 100].map((limitOption) => (
-                    <SelectItem key={limitOption} value={limitOption.toString()}>
-                      {limitOption}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <p className="text-sm font-medium">trên trang</p>
-            </div>
-
-            <Pagination
-              pages={Math.ceil(total / limit)}
-              currentPage={currentPage}
-              setCurrentPage={setCurrentPage}
-            />
-            <div className="w-20 lg:w-40" />
-          </div>
         </CardContent>
       </Card>
 
-      {viewingData && (
-        <ViewPowerModal
-          data={viewingData}
-          setViewingData={setViewingData}
+      <div className="justify-between items-center">
+        <div className="flex space-x-2">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" onClick={exportExcel}>
+                  <Download className="mr-2 h-4 w-4" />
+                  Xuất báo cáo
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Xuất báo cáo Excel</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+        <div className="flex items-center justify-between">
+          <div className="font-medium">Tổng số: {total}</div>
+          {userWright === UserWright.Write && (
+            <Button
+              onClick={() => fetchReferenceData(() => setIsNewModalShow(true))}
+            >
+              <Plus className="mr-2 h-4 w-4" /> Thêm cột
+            </Button>
+          )}
+        </div>
+      </div>
+
+      <Card>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[50px]">STT</TableHead>
+                <TableHead>Tên</TableHead>
+                <TableHead>Mã cột</TableHead>
+                <TableHead>Tọa độ</TableHead>
+                <TableHead>Trạng thái</TableHead>
+                <TableHead className="text-right">Hành động</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {powerPoles.map((powerPole, index) => (
+                <TableRow key={powerPole.id}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{powerPole.name}</TableCell>
+                  <TableCell>{powerPole.code}</TableCell>
+                  <TableCell>
+                    <div className="flex flex-col">
+                      {Object.entries(powerPole.coordinates).map(
+                        ([numberType, number]) => (
+                          <span className="font-mono text-sm" key={numberType}>
+                            {number}
+                          </span>
+                        )
+                      )}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={
+                        powerPole.activity === Status.Error
+                          ? "destructive"
+                          : "outline"
+                      }
+                      className={cn(
+                        powerPole.activity === Status.Okay &&
+                          "border-green-500 bg-green-50 text-green-700",
+                        powerPole.activity === Status.Warning &&
+                          "border-yellow-500 bg-yellow-50 text-yellow-700"
+                      )}
+                    >
+                      {
+                        {
+                          [Status.Okay]: "Bình thường",
+                          [Status.Warning]: "Cảnh báo",
+                          [Status.Error]: "Báo động",
+                        }[powerPole.activity]
+                      }
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex justify-end space-x-2">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => setViewingData(powerPole)}
+                            >
+                              <Eye className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Xem</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+
+                      {userWright === UserWright.Write && (
+                        <>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() =>
+                                    fetchReferenceData(() =>
+                                      setEditingData(powerPole)
+                                    )
+                                  }
+                                >
+                                  <Edit className="h-4 w-4 text-yellow-500" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Sửa</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => setDeletingData(powerPole)}
+                                >
+                                  <Trash className="h-4 w-4 text-red-500" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Xóa</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </>
+                      )}
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
+
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <span className="text-sm font-medium">Số bản ghi mỗi trang:</span>
+          <Select
+            value={String(limit)}
+            onValueChange={(value) => {
+              setCurrentPage(1);
+              setLimit(Number(value));
+            }}
+          >
+            <SelectTrigger className="w-[70px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {[20, 50, 100].map((limitOption) => (
+                <SelectItem key={limitOption} value={String(limitOption)}>
+                  {limitOption}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <Pagination
+          pages={Math.ceil(total / limit)}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
         />
+        <div className="w-20 lg:w-40" />
+      </div>
+
+      {viewingData && (
+        <ViewPowerModal data={viewingData} setViewingData={setViewingData} />
       )}
 
       {referenceData && isNewModalShow && (
@@ -468,11 +514,11 @@ export default function Powers() {
                 fetchData(url.id, params, limit, currentPage);
               })
               .catch((e: Error) => {
-                if(e.message) toast.error(e.message);
+                if (e.message) toast.error(e.message);
               });
           }}
         />
       )}
     </div>
-  )
+  );
 }

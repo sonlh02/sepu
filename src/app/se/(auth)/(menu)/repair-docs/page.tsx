@@ -319,7 +319,7 @@ export default function RepairDocs() {
             <TableBody>
               {repairs.map((repair, index) => (
                 <TableRow key={repair.id}>
-                  <TableCell className="font-medium">{index + 1}</TableCell>
+                  <TableCell>{index + 1}</TableCell>
                   <TableCell>
                     {Moment(repair.date).format("DD-MM-YYYY")}
                   </TableCell>
@@ -330,11 +330,13 @@ export default function RepairDocs() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    {repair.workers.map((worker, index) => (
-                      <div key={index} className="text-sm">
-                        {worker.name}
-                      </div>
-                    ))}
+                    <ul className="list-disc list-inside">
+                      {repair.workers.map((worker, index) => (
+                        <li key={index} className="text-sm no-wrap">
+                          {worker.name}
+                        </li>
+                      ))}
+                    </ul>
                   </TableCell>
                   <TableCell>
                     <Badge
@@ -344,60 +346,101 @@ export default function RepairDocs() {
                           : repair.status === RepairStatus.Confirmed
                           ? "secondary"
                           : repair.status === RepairStatus.Submited
-                          ? "default"
+                          ? "secondary"
                           : repair.status === RepairStatus.Approved
-                          ? "outline"
-                          : "secondary"
+                          ? "destructive"
+                          : "default"
+                      }
+                      className={
+                        repair.status === RepairStatus.Created
+                          ? "bg-gray-500 text-white no-wrap"
+                          : repair.status === RepairStatus.Confirmed
+                          ? "bg-blue-500 text-white no-wrap"
+                          : repair.status === RepairStatus.Submited
+                          ? "bg-purple-500 text-white no-wrap"
+                          : repair.status === RepairStatus.Approved
+                          ? "bg-yellow-500 text-white no-wrap"
+                          : "bg-green-500 text-white no-wrap"
                       }
                     >
-                      {repair.status === RepairStatus.Created
-                        ? "Phiếu mới"
-                        : repair.status === RepairStatus.Confirmed
-                        ? "Đã nhận phiếu"
-                        : repair.status === RepairStatus.Submited
-                        ? "Đã nộp phiếu"
-                        : repair.status === RepairStatus.Approved
-                        ? "Đang ký duyệt"
-                        : "Hoàn thành"}
+                      {
+                        {
+                          [RepairStatus.Created]: "Phiếu mới",
+                          [RepairStatus.Confirmed]: "Đã nhận phiếu",
+                          [RepairStatus.Submited]: "Đã nộp phiếu",
+                          [RepairStatus.Approved]: "Đang ký duyệt",
+                          [RepairStatus.Completed]: "Hoàn thành",
+                        }[repair.status]
+                      }
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end space-x-2">
-                      <Button variant="ghost" size="sm" asChild>
-                        <Link href={`${Nav.REPAIRDOC_VIEW_PAGE}/${repair.id}`}>
-                          <Eye className="h-4 w-4" />
-                        </Link>
-                      </Button>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon" asChild>
+                              <Link
+                                href={`${Nav.REPAIRDOC_VIEW_PAGE}/${repair.id}`}
+                              >
+                                <Eye className="h-4 w-4" />
+                              </Link>
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Xem</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                       {userWright === UserWright.Write &&
                         [RepairStatus.Created, RepairStatus.Confirmed].includes(
                           repair.status
                         ) && (
                           <>
-                            <Button variant="ghost" size="sm" asChild>
-                              <Link
-                                href={`${Nav.REPAIRDOC_EDIT_PAGE}/${repair.id}`}
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Link>
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setDeletingData(repair)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button variant="ghost" size="icon" asChild>
+                                    <Link
+                                      href={`${Nav.REPAIRDOC_EDIT_PAGE}/${repair.id}`}
+                                    >
+                                      <Edit className="h-4 w-4 text-yellow-500" />
+                                    </Link>
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Sửa</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => setDeletingData(repair)}
+                                  >
+                                    <Trash2 className="h-4 w-4 text-red-500" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>Xóa</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                           </>
                         )}
                       {[RepairStatus.Completed].includes(repair.status) && (
-                        <Button variant="ghost" size="sm" asChild>
-                          <Link
-                            href={`${Nav.REPAIRDOC_PRINT_PAGE}/${repair.id}`}
-                            target="_blank"
-                          >
-                            <Printer className="h-4 w-4" />
-                          </Link>
-                        </Button>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button variant="ghost" size="icon" asChild>
+                                <Link
+                                  href={`${Nav.REPAIRDOC_PRINT_PAGE}/${repair.id}`}
+                                  target="_blank"
+                                >
+                                  <Printer className="h-4 w-4 text-blue-500" />
+                                </Link>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>In</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       )}
                     </div>
                   </TableCell>
@@ -405,58 +448,58 @@ export default function RepairDocs() {
               ))}
             </TableBody>
           </Table>
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <span className="text-sm font-medium">Số bản ghi mỗi trang:</span>
-              <Select
-                value={String(limit)}
-                onValueChange={(value) => {
-                  setCurrentPage(1);
-                  setLimit(Number(value));
-                }}
-              >
-                <SelectTrigger className="w-[70px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {[20, 50, 100].map((limitOption) => (
-                    <SelectItem key={limitOption} value={String(limitOption)}>
-                      {limitOption}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <Pagination
-              pages={Math.ceil(total / limit)}
-              currentPage={currentPage}
-              setCurrentPage={setCurrentPage}
-            />
-            <div className="w-20 lg:w-40" />
-          </div>
         </CardContent>
-
-        {deletingData && (
-          <DeleteConfirm
-            className="modal-open"
-            title={`Xóa phiếu: ${deletingData.code}?`}
-            setIsDeleteConfirmModalShow={setDeletingData}
-            deleteFunction={() => {
-              fetchWithToken(`${SE.API_REPAIRDOC}/${deletingData.id}`, {
-                method: "DELETE",
-              })
-                .then((data) => {
-                  if (data.message) toast.success(data.message);
-                  fetchData(params, limit, currentPage);
-                })
-                .catch((e: Error) => {
-                  if (e.message) toast.error(e.message);
-                });
-            }}
-          />
-        )}
       </Card>
+
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <span className="text-sm font-medium">Số bản ghi mỗi trang:</span>
+          <Select
+            value={String(limit)}
+            onValueChange={(value) => {
+              setCurrentPage(1);
+              setLimit(Number(value));
+            }}
+          >
+            <SelectTrigger className="w-[70px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {[20, 50, 100].map((limitOption) => (
+                <SelectItem key={limitOption} value={String(limitOption)}>
+                  {limitOption}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <Pagination
+          pages={Math.ceil(total / limit)}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+        <div className="w-20 lg:w-40" />
+      </div>
+
+      {deletingData && (
+        <DeleteConfirm
+          className="modal-open"
+          title={`Xóa phiếu: ${deletingData.code}?`}
+          setIsDeleteConfirmModalShow={setDeletingData}
+          deleteFunction={() => {
+            fetchWithToken(`${SE.API_REPAIRDOC}/${deletingData.id}`, {
+              method: "DELETE",
+            })
+              .then((data) => {
+                if (data.message) toast.success(data.message);
+                fetchData(params, limit, currentPage);
+              })
+              .catch((e: Error) => {
+                if (e.message) toast.error(e.message);
+              });
+          }}
+        />
+      )}
     </div>
   );
 }
