@@ -46,8 +46,8 @@ export default function ConfirmInspectModal({
   const handleClose = () => setAction("")
 
   return (
-    <div className={`fixed inset-0 z-50 bg-background/80 backdrop-blur-sm ${className}`}>
-      <div className="fixed left-[50%] top-[50%] z-50 grid w-full max-w-xl translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 sm:rounded-lg md:w-full">
+    <div className={`fixed inset-0 z-50 bg-black/20 backdrop-blur-sm ${className}`}>
+      <div className="fixed left-[50%] top-[50%] z-50 grid w-full max-w-3xl translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 sm:rounded-lg md:w-full">
         <div className="flex flex-col space-y-1.5 text-center">
           <Badge 
             variant={inspectData.type === InspectType.Day ? "default" : "secondary"}
@@ -64,7 +64,7 @@ export default function ConfirmInspectModal({
           </h2>
         </div>
         <form onSubmit={confirm} className="mt-4">
-          <Card>
+          <Card className="border-none">
             <CardContent className="p-6">
               <ScrollArea className="h-[calc(100dvh-20rem)] pr-4">
                 <VStep1

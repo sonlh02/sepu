@@ -61,7 +61,7 @@ export function InspectSheet({
   }[inspectData.status]
 
   return (
-    <Card className="w-full">
+    <Card className="w-full border border-black h-96">
       <CardHeader className="p-4 pb-0 flex flex-row justify-between items-start">
         {statusBadge}
         <Button

@@ -524,27 +524,19 @@ export default function Home() {
         <div className="gap-4 md:gap-6 mb-4 md:mb-6">
           <Card>
             <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between">
-              <CardTitle>Thống kê nổi bật năm {year}</CardTitle>
+              <CardTitle>Thống kê kiểm tra năm {year}</CardTitle>
               <div className="flex mt-4 md:mt-0">
                 <Button size="sm" className="mr-2">
                   <Link href={Nav.INSPECTDOC_DAY_PAGE} className="flex">
                     <Plus className="mr-2 h-4 w-4" /> Thêm phiếu kiểm tra
                   </Link>
                 </Button>
-                <Button size="sm" className="bg-gray-300 text-black">
-                  <Link href={Nav.REPAIRDOC_NEW_PAGE} className="flex">
-                    <Plus className="mr-2 h-4 w-4" /> Thêm phiếu sửa chữa
-                  </Link>
-                </Button>
               </div>
             </CardHeader>
-            <CardContent className="flex flex-col lg:flex-row">
-              {renderPieChart(statisticYear)}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 ml-0 lg:ml-5 text-center">
+            <CardContent className="">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 ml-0 lg:ml-5 text-center">
                 <StatCard title="Số lần kiểm tra" value={statisticYear?.times_inspect} />
-                <StatCard title="Số lần sửa chữa" value={statisticYear?.times_repair} variant="blue" />
                 <StatCard title="Số tuyến kiểm tra" value={statisticYear?.num_inspect_route} variant="purple" />
-                <StatCard title="Số tuyến sửa chữa" value={statisticYear?.num_repair_route} variant="green" />
                 <StatCard title="Số lỗi phát hiện khi bay" value={statisticYear?.num_incident_fly} />
                 <StatCard title="Số lỗi camera phát hiện" value={statisticYear?.num_incident_cam} variant="blue" />
                 <StatCard title="Tuyến gặp nhiều lỗi (phát hiện khi bay)" value={statisticYear?.route_max_incident_fly || "-"} variant="purple" />
@@ -562,7 +554,6 @@ export default function Home() {
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="overflow-auto">
                 <TabsTrigger value="inspection">Phiếu kiểm tra</TabsTrigger>
-                <TabsTrigger value="repair">Phiếu sửa chữa</TabsTrigger>
               </TabsList>
               <TabsContent value="inspection">
                 <Table className="w-full">
@@ -615,68 +606,15 @@ export default function Home() {
                                 case InspectStatus.Created:
                                   return <div className="">Phiếu mới</div>;
                                 case InspectStatus.Confirmed:
-                                  return <div className="text-slate-500">Đã nhận phiếu</div>;
+                                  return <div className="text-blue-500">Đã nhận phiếu</div>;
                                 case InspectStatus.Ready:
-                                  return <div className="text-orange-500">Thiết bị sẵn sàng</div>;
+                                  return <div className="text-green-500">Thiết bị sẵn sàng</div>;
                                 case InspectStatus.Submited:
-                                  return <div className="text-neutral-500">Đã nộp phiếu</div>;
+                                  return <div className="text-purple-500">Đã nộp phiếu</div>;
                                 case InspectStatus.Approved:
-                                  return <div className="text-fuchsia-500">Đang ký duyệt</div>;
+                                  return <div className="text-yellow-500">Đang ký duyệt</div>;
                                 case InspectStatus.Completed:
-                                  return <div className="text-rose-500">Hoàn thành</div>;
-                                default:
-                                  return null;
-                              }
-                            })()}
-                          </span>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TabsContent>
-              <TabsContent value="repair">
-                <Table className="w-full">
-                  <TableHeader>
-                    <TableRow className="text-center">
-                      <TableHead className="text-center">ID</TableHead>
-                      <TableHead className="text-center">Ngày sửa chữa</TableHead>
-                      <TableHead className="text-center">Mã phiếu</TableHead>
-                      <TableHead className="hidden lg:table-cell text-center">Đội sửa chữa</TableHead>
-                      <TableHead className="text-center">Trạng thái</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {repairs.slice(0, 5).map((repair) => (
-                      <TableRow key={repair.id} className="text-center">
-                        <TableCell className="font-medium">{repair.id}</TableCell>
-                        <TableCell>{Moment(repair.date).format("DD-MM-YYYY")}</TableCell>
-                        <TableCell>
-                          <div className="font-bold pb-1">{repair.code}</div>
-                          <div className="text-xs">
-                            <span className="text-tertiary">Tuyến: </span>
-                            <span className="font-bold">{repair.powerline.code}</span> ({repair.powerline.name})
-                          </div>
-                        </TableCell>
-                        <TableCell className="hidden lg:table-cell">
-                          {repair.workers.map((worker, idx) => (
-                            <div key={idx}>- {worker.name}</div>
-                          ))}
-                        </TableCell>
-                        <TableCell>
-                          <span className="flex justify-center font-bold">
-                            {(() => {
-                              switch (repair.status) {
-                                case RepairStatus.Created:
-                                  return <div className="">Phiếu mới</div>;
-                                case RepairStatus.Confirmed:
-                                  return <div className="text-slate-500">Đã nhận phiếu</div>;
-                                case RepairStatus.Submited:
-                                  return <div className="text-neutral-500">Đã nộp phiếu</div>;
-                                case RepairStatus.Approved:
-                                  return <div className="text-fuchsia-500">Đang ký duyệt</div>;
-                                case RepairStatus.Completed:
-                                  return <div className="text-rose-500">Hoàn thành</div>;
+                                  return <div className="text-blue-800">Hoàn thành</div>;
                                 default:
                                   return null;
                               }

@@ -415,7 +415,7 @@ export default function InspectDocs() {
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="font-medium">Tổng số: {total}</div>
+          <div className="font-medium mt-4">Tổng số: {total}</div>
           {userWright === UserWright.Write && (
             <div className="space-x-2">
               <Button asChild variant="outline">

@@ -51,36 +51,37 @@ import {
 const sidebarItems = [
   { icon: Home, label: "Trang chủ", link: Nav.DASHBOARD_PAGE, wright: "dashboard" },
   { icon: Activity, label: "Giám sát", link: Nav.SUPERVISE_PAGE, wright: "map" },
-  {
-    icon: BarChart2,
-    label: "Thống kê",
-    wright: "statistic",
-    subItems: [
-      { label: "Thống kê chung", link: Nav.STATISTIC_PAGE, wright: "statistic" },
-      { label: "Thống kê phiếu công việc", link: Nav.STATISTIC_REPORT_DOC_PAGE, wright: "statistic" },
-      { label: "Thống kê tiến độ", link: Nav.STATISTIC_REPORT_WORKPROGRESS_PAGE, wright: "statistic" },
-    ],
-  },
-  { icon: Map, label: "Tuyến", link: Nav.ROUTE_PAGE, wright: "route" },
-  { icon: Inspect, label: "Kiểm tra", link: Nav.INSPECTDOC_PAGE, wright: "inspectdoc" },
-  { icon: Pin, label: "Sửa chữa", link: Nav.REPAIRDOC_PAGE, wright: "repairdoc" },
-  {
-    icon: Ratio,
-    label: "Thiết bị",
-    wright: ["workstation", "flycam"],
-    subItems: [
-      { label: "Quản lý máy trạm", link: Nav.WORKSTATION_PAGE, wright: "workstation" },
-      { label: "Quản lý thiết bị bay", link: Nav.UAV_PAGE, wright: "flycam" },
-    ],
-  },
-  {
-    icon: AlertCircle,
-    label: "Cảnh báo",
-    wright: ["incident", "incidentfly"],
-    subItems: [
-      { label: "Danh sách cảnh báo bay", link: Nav.INCIDENTFLY_PAGE, wright: "incidentfly" },
-    ],
-  },
+  // {
+  //   icon: BarChart2,
+  //   label: "Thống kê",
+  //   wright: "statistic",
+  //   subItems: [
+  //     { label: "Thống kê chung", link: Nav.STATISTIC_PAGE, wright: "statistic" },
+  //     { label: "Thống kê phiếu công việc", link: Nav.STATISTIC_REPORT_DOC_PAGE, wright: "statistic" },
+  //     { label: "Thống kê tiến độ", link: Nav.STATISTIC_REPORT_WORKPROGRESS_PAGE, wright: "statistic" },
+  //   ],
+  // },
+  { icon: Map, label: "Quản lý tuyến", link: Nav.ROUTE_PAGE, wright: "route" },
+  { icon: Inspect, label: "Quản lý phiếu kiểm tra", link: Nav.INSPECTDOC_PAGE, wright: "inspectdoc" },
+  { icon: Briefcase, label: "Quản lý công việc", link: Nav.MYTASK_PAGE, wright: "inspectdoc" },
+  // { icon: Pin, label: "Sửa chữa", link: Nav.REPAIRDOC_PAGE, wright: "repairdoc" },
+  // {
+  //   icon: Ratio,
+  //   label: "Thiết bị",
+  //   wright: ["workstation", "flycam"],
+  //   subItems: [
+  //     { label: "Quản lý máy trạm", link: Nav.WORKSTATION_PAGE, wright: "workstation" },
+  //     { label: "Quản lý thiết bị bay", link: Nav.UAV_PAGE, wright: "flycam" },
+  //   ],
+  // },
+  // {
+  //   icon: AlertCircle,
+  //   label: "Cảnh báo",
+  //   wright: ["incident", "incidentfly"],
+  //   subItems: [
+  //     { label: "Danh sách cảnh báo bay", link: Nav.INCIDENTFLY_PAGE, wright: "incidentfly" },
+  //   ],
+  // },
   {
     icon: Users,
     label: "Người dùng",

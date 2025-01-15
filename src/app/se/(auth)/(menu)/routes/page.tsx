@@ -321,7 +321,7 @@ export default function Routes() {
           </TooltipProvider>
         </div>
         <div className="flex items-center justify-between">
-          <div className="font-medium">Tổng số: {total}</div>
+          <div className="font-medium mt-4">Tổng số: {total}</div>
           {userWright === UserWright.Write && (
             <Button onClick={() => setIsNewModalShow(true)}>
               <Plus className="mr-2 h-4 w-4" /> Thêm tuyến
@@ -396,7 +396,7 @@ export default function Routes() {
                       <Badge
                         variant={
                           powerline.status === Status.Okay
-                            ? "default"
+                            ? "confirmed"
                             : powerline.status === Status.Warning
                             ? "outline"
                             : "destructive"
@@ -410,9 +410,7 @@ export default function Routes() {
                       </Badge>
                     )}
                   </TableCell>
-                  <TableCell className="max-w-[200px] truncate">
-                    {powerline.note}
-                  </TableCell>
+                  <TableCell>{powerline.note}</TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end space-x-2">
                       <TooltipProvider>

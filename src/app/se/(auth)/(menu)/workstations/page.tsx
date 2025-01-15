@@ -1,29 +1,55 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from "react"
-import { toast } from "react-toastify"
-import Moment from "moment"
-import * as XLSX from 'xlsx'
+import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import Moment from "moment";
+import * as XLSX from "xlsx";
 
-import { fetchWithToken } from "@/lib/fetch_data"
-import { SE } from "@/lib/api"
-import menubar from "@/lib/menu"
-import { UserWright } from "@/enum/user_wright"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Search, Plus, Trash, Edit, Eye, FileDown } from "lucide-react"
+import { fetchWithToken } from "@/lib/fetch_data";
+import { SE } from "@/lib/api";
+import menubar from "@/lib/menu";
+import { UserWright } from "@/enum/user_wright";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Search,
+  Plus,
+  Trash,
+  Edit,
+  Eye,
+  FileDown,
+  Download,
+} from "lucide-react";
 
-import NewWorkstationModal from "./NewWorkstationModal"
-import ViewWorkstationModal from "./ViewWorkstationModal"
-import EditWorkstationModal from "./EditWorkstationModal"
-import UserDontAccessPage from "@/component/NotAllow"
-import Pagination from "@/app/se/(auth)/Pagination"
-import DeleteConfirm from "@/app/se/(auth)/(menu)/_modal/DeleteConfirm"
+import NewWorkstationModal from "./NewWorkstationModal";
+import ViewWorkstationModal from "./ViewWorkstationModal";
+import EditWorkstationModal from "./EditWorkstationModal";
+import UserDontAccessPage from "@/component/NotAllow";
+import Pagination from "@/app/se/(auth)/Pagination";
+import DeleteConfirm from "@/app/se/(auth)/(menu)/_modal/DeleteConfirm";
 
 type DevicesRawData = {
   data: {
@@ -73,19 +99,20 @@ export default function Workstations() {
         const worksheet = XLSX.utils.json_to_sheet(data.data);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Máy trạm");
-        XLSX.writeFile(workbook, `DanhSachMayTram_${Moment(new Date()).format("DD-MM-YYYY")}.xlsx`);
+        XLSX.writeFile(
+          workbook,
+          `DanhSachMayTram_${Moment(new Date()).format("DD-MM-YYYY")}.xlsx`
+        );
       })
       .catch((e: Error) => {
-        if(e.message) toast.error(e.message);
+        if (e.message) toast.error(e.message);
       });
-  }
+  };
 
   function fetchData(params: any, limit: number, page: number) {
     params.limit = String(limit);
     params.page = String(page);
-    fetchWithToken(
-      `${SE.API_WORKSTATIONS}?${new URLSearchParams(params)}`
-    )
+    fetchWithToken(`${SE.API_WORKSTATIONS}?${new URLSearchParams(params)}`)
       .then((response) => response as DevicesRawData)
       .then((data) => {
         if (!data.data) return;
@@ -106,15 +133,15 @@ export default function Workstations() {
         setTotal(data.data.total);
       })
       .catch((e: Error) => {
-        if(e.message) toast.error(e.message);
+        if (e.message) toast.error(e.message);
       });
   }
 
   useEffect(() => {
-    if(menubar("workstation")) {
+    if (menubar("workstation")) {
       setUserWright(UserWright.Write);
       fetchData(params, limit, currentPage);
-    } else if(menubar("workstation-view")) {
+    } else if (menubar("workstation-view")) {
       setUserWright(UserWright.Read);
       fetchData(params, limit, currentPage);
     } else {
@@ -127,33 +154,33 @@ export default function Workstations() {
   if (userWright === UserWright.None) return <UserDontAccessPage />;
 
   function search(formData: FormData) {
-    const searchParams = Object.fromEntries(formData)
-    if (searchParams.activity === 'all') {
-      delete searchParams.activity
+    const searchParams = Object.fromEntries(formData);
+    if (searchParams.activity === "all") {
+      delete searchParams.activity;
     }
-    setParams(searchParams)
+    setParams(searchParams);
   }
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="text-2xl font-bold">Danh sách máy trạm</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form className="space-y-4 mb-6" action={search}>
-          <div className="flex flex-wrap gap-4">
-            <Input
-              className="flex-1 min-w-[200px]"
-              name="name"
-              placeholder="Tên máy trạm"
-            />
-            <Input
-              className="flex-1 min-w-[200px]"
-              name="code"
-              placeholder="Mã máy trạm"
-            />
+    <div className="space-y-6 p-2">
+      <div className="flex justify-between items-center p-1">
+        <h1 className="text-3xl font-bold tracking-tight p-1">
+          Danh sách máy trạm
+        </h1>
+      </div>
+      <Card>
+        <CardHeader>
+          <CardTitle>Tìm kiếm</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form
+            className="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+            action={search}
+          >
+            <Input name="name" placeholder="Tên máy trạm" />
+            <Input name="code" placeholder="Mã máy trạm" />
             <Select name="activity">
-              <SelectTrigger className="flex-1 min-w-[200px]">
+              <SelectTrigger>
                 <SelectValue placeholder="Trạng thái" />
               </SelectTrigger>
               <SelectContent>
@@ -162,28 +189,45 @@ export default function Workstations() {
                 <SelectItem value="false">Không hoạt động</SelectItem>
               </SelectContent>
             </Select>
-            <Button type="submit" className="min-w-[120px]">
+            <Button type="submit" className="w-24">
               <Search className="mr-2 h-4 w-4" /> Tìm kiếm
             </Button>
-          </div>
-        </form>
+          </form>
+        </CardContent>
+      </Card>
 
-        <div className="flex justify-between items-center mb-6">
-          <Button variant="outline" onClick={exportExcel}>
-            <FileDown className="mr-2 h-4 w-4" /> Xuất báo cáo
-          </Button>
+      <div className="justify-between items-center">
+        <div className="flex space-x-2">
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" onClick={exportExcel}>
+                  <Download className="mr-2 h-4 w-4" />
+                  Xuất báo cáo
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Xuất báo cáo Excel</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
+        <div className="flex items-center justify-between">
+          <div className="font-medium mt-4">Tổng số: {total}</div>
           {userWright === UserWright.Write && (
             <Button onClick={() => setIsNewModalShow(true)}>
               <Plus className="mr-2 h-4 w-4" /> Thêm máy trạm
             </Button>
           )}
         </div>
+      </div>
 
-        <div className="rounded-md border">
+      <Card>
+        <CardContent className="p-0">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[50px] text-center">STT</TableHead>
+                <TableHead className="w-[50px]">STT</TableHead>
                 <TableHead>Tên</TableHead>
                 <TableHead>Mã</TableHead>
                 <TableHead>Ngày mua</TableHead>
@@ -195,25 +239,29 @@ export default function Workstations() {
             <TableBody>
               {devices.map((device, index) => (
                 <TableRow key={device.id}>
-                  <TableCell className="text-center font-medium">{index + 1}</TableCell>
-                  <TableCell className="font-medium">{device.name}</TableCell>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{device.name}</TableCell>
                   <TableCell>{device.code}</TableCell>
-                  <TableCell>{Moment(device.purchaseDate).format("DD/MM/YYYY")}</TableCell>
                   <TableCell>
-                    <Badge variant={device.activity ? "default" : "destructive"}>
+                    {Moment(device.purchaseDate).format("DD/MM/YYYY")}
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={device.activity ? "confirmed" : "destructive"}
+                    >
                       {device.activity ? "Hoạt động" : "Không hoạt động"}
                     </Badge>
                   </TableCell>
-                  <TableCell>
-                    <div className="max-w-[200px] truncate" title={device.note}>
-                      {device.note}
-                    </div>
-                  </TableCell>
+                  <TableCell>{device.note}</TableCell>
                   <TableCell className="text-right">
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Button variant="ghost" size="icon" onClick={() => setViewingData(device)}>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setViewingData(device)}
+                          >
                             <Eye className="h-4 w-4" />
                           </Button>
                         </TooltipTrigger>
@@ -228,8 +276,12 @@ export default function Workstations() {
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <Button variant="ghost" size="icon" onClick={() => setEditingData(device)}>
-                                <Edit className="h-4 w-4" />
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setEditingData(device)}
+                              >
+                                <Edit className="h-4 w-4 text-yellow-500" />
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent>
@@ -240,8 +292,12 @@ export default function Workstations() {
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger asChild>
-                              <Button variant="ghost" size="icon" onClick={() => setDeletingData(device)}>
-                                <Trash className="h-4 w-4" />
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setDeletingData(device)}
+                              >
+                                <Trash className="h-4 w-4 text-red-500" />
                               </Button>
                             </TooltipTrigger>
                             <TooltipContent>
@@ -256,40 +312,38 @@ export default function Workstations() {
               ))}
             </TableBody>
           </Table>
-        </div>
+        </CardContent>
+      </Card>
 
-        <div className="flex items-center justify-between mt-4">
-          <div className="flex items-center space-x-2">
-            <p className="text-sm font-medium">Số bản ghi mỗi trang</p>
-            <Select
-              value={limit.toString()}
-              onValueChange={(value) => {
-                setCurrentPage(1)
-                setLimit(Number(value))
-              }}
-            >
-              <SelectTrigger className="h-8 w-[70px]">
-                <SelectValue placeholder={limit} />
-              </SelectTrigger>
-              <SelectContent side="top">
-                {[20, 50, 100].map((pageSize) => (
-                  <SelectItem key={pageSize} value={`${pageSize}`}>
-                    {pageSize}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <Pagination
-            pages={Math.ceil(total / limit)}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-          />
-          <div className="text-sm text-muted-foreground">
-            Tổng số: <span className="font-medium">{total}</span> bản ghi
-          </div>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center space-x-2">
+          <span className="text-sm font-medium">Số bản ghi mỗi trang:</span>
+          <Select
+            value={String(limit)}
+            onValueChange={(value) => {
+              setCurrentPage(1);
+              setLimit(Number(value));
+            }}
+          >
+            <SelectTrigger className="w-[70px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {[20, 50, 100].map((limitOption) => (
+                <SelectItem key={limitOption} value={String(limitOption)}>
+                  {limitOption}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-      </CardContent>
+        <Pagination
+          pages={Math.ceil(total / limit)}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+        <div className="w-20 lg:w-40" />
+      </div>
 
       {viewingData && (
         <ViewWorkstationModal
@@ -327,20 +381,19 @@ export default function Workstations() {
           title={`Xóa thiết bị ${deletingData.name}?`}
           setIsDeleteConfirmModalShow={setDeletingData}
           deleteFunction={() => {
-            fetchWithToken(
-              `${SE.API_WORKSTATION}/${deletingData.id}`,
-              { method: "DELETE" }
-            )
+            fetchWithToken(`${SE.API_WORKSTATION}/${deletingData.id}`, {
+              method: "DELETE",
+            })
               .then((data) => {
-                if (data.message) toast.success(data.message)
-                fetchData(params, limit, currentPage)
+                if (data.message) toast.success(data.message);
+                fetchData(params, limit, currentPage);
               })
               .catch((e: Error) => {
-                if(e.message) toast.error(e.message)
-              })
+                if (e.message) toast.error(e.message);
+              });
           }}
         />
       )}
-    </Card>
-  )
+    </div>
+  );
 }

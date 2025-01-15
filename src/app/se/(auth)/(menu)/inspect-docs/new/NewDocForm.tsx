@@ -1,32 +1,49 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from "react"
-import { useRouter } from 'next/navigation'
-import { toast } from "react-toastify"
-import Link from "next/link"
-import _ from "lodash"
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import Link from "next/link";
+import _ from "lodash";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import Select1 from "react-select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import DatePicker from "react-datepicker";
-import { MultiSelect, OptionType } from "@/components/ui/multi-select"
+import { MultiSelect, OptionType } from "@/components/ui/multi-select";
 import SelectComponent from "react-select";
 
-import { fetchWithToken } from "@/lib/fetch_data"
-import { SE } from "@/lib/api"
-import menubar from "@/lib/menu"
-import { Nav } from "@/lib/nav"
-import { UserWright } from "@/enum/user_wright"
-import { InspectType } from "@/enum/inspect_type"
-import { ReferenceData, fetchReferenceData } from "../fetch_reference_data"
-import UserDontAccessPage from "@/component/NotAllow"
-import { ReferencePowerData, fetchReferencePowerData } from "../fetch_reference_power_data"
-import { SingleValue } from "react-select"
-import { CalendarIcon } from "lucide-react"
+import { fetchWithToken } from "@/lib/fetch_data";
+import { SE } from "@/lib/api";
+import menubar from "@/lib/menu";
+import { Nav } from "@/lib/nav";
+import { UserWright } from "@/enum/user_wright";
+import { InspectType } from "@/enum/inspect_type";
+import { ReferenceData, fetchReferenceData } from "../fetch_reference_data";
+import UserDontAccessPage from "@/component/NotAllow";
+import {
+  ReferencePowerData,
+  fetchReferencePowerData,
+} from "../fetch_reference_power_data";
+import { SingleValue } from "react-select";
+import { CalendarIcon } from "lucide-react";
 
 type UserData = {
   phone: string;
@@ -51,37 +68,63 @@ type Approver = {
   represent: string;
 };
 
+type PowerlineOption = {
+  value: string;
+  label: string;
+};
 
-export default function NewDocForm({ inspectType }: { inspectType: InspectType }) {
-  const router = useRouter()
-  const [userWright, setUserWright] = useState<UserWright | null>(null)
-  const [referenceData, setReferenceData] = useState<ReferenceData | null>(null)
-  const [powerPoles, setPowerPoles] = useState<{ [key: string]: string }>({})
-  const [date, setDate] = useState(new Date())
-  const represent = ["Tổ QLVH", "Đội đường dây", "Đội QL LĐCT"]
+export default function NewDocForm({
+  inspectType,
+}: {
+  inspectType: InspectType;
+}) {
+  const router = useRouter();
+  const [userWright, setUserWright] = useState<UserWright | null>(null);
+  const [referenceData, setReferenceData] = useState<ReferenceData | null>(
+    null
+  );
+  const [powerPoles, setPowerPoles] = useState<{ [key: string]: string }>({});
+  const [date, setDate] = useState(new Date());
+  const represent = ["Tổ QLVH", "Đội đường dây", "Đội QL LĐCT"];
 
   const [workstations, setWorkstations] = useState<OptionType[]>([]);
-  const [flycams, setFlycams] = useState<Array<{ value: string; label: string }>>([])
-  const [route, setRoute] = useState<{ id: string; value: string; label: string } | null>(null);
-  const [spower, setSpower] = useState<{ value: string; label: string } | null>(null);
-  const [epower, setEpower] = useState<{ value: string; label: string } | null>(null);
-  const [selectedWorkers, setSelectedWorkers] = useState<(UserData | null)[]>(new Array(5).fill(null))
-  const [selectedApprovers, setSelectedApprovers] = useState<Approver[]>([])
+  const [flycams, setFlycams] = useState<
+    Array<{ value: string; label: string }>
+  >([]);
+  const [route, setRoute] = useState<{
+    id: string;
+    value: string;
+    label: string;
+  } | null>(null);
+  const [spower, setSpower] = useState<{ value: string; label: string } | null>(
+    null
+  );
+  const [epower, setEpower] = useState<{ value: string; label: string } | null>(
+    null
+  );
+  const [selectedWorkers, setSelectedWorkers] = useState<(UserData | null)[]>(
+    new Array(5).fill(null)
+  );
+  const [selectedApprovers, setSelectedApprovers] = useState<Approver[]>([]);
 
   const handleWorkerChange = (
     i: number,
-    selectedOption: { value: string; label: string; userData: Partial<UserData> } | null
+    selectedOption: {
+      value: string;
+      label: string;
+      userData: Partial<UserData>;
+    } | null
   ) => {
     if (selectedOption) {
       const { userData } = selectedOption;
       const newSelectedWorkers = [...selectedWorkers];
       newSelectedWorkers[i] = {
-        phone: userData.phone || '',
-        name: userData.name || '',
+        phone: userData.phone || "",
+        name: userData.name || "",
         lv_work: userData.lv_work,
-        position: userData.position || '', // Provide a default empty string
-        usercode: userData.usercode || '',
-        department: userData.department || '',
+        position: userData.position || "", // Provide a default empty string
+        usercode: userData.usercode || "",
+        department: userData.department || "",
         lv_safe: userData.lv_safe,
       };
       setSelectedWorkers(newSelectedWorkers);
@@ -95,19 +138,20 @@ export default function NewDocForm({ inspectType }: { inspectType: InspectType }
     if (!referenceData || !referenceData.users || !selectedOption) {
       return;
     }
-  
+
     const newSelectedApprovers = [...selectedApprovers];
     const { userData } = selectedOption;
-  
-    const username = Object.keys(referenceData.users).find(
-      (key) => referenceData.users[key].name === userData.name
-    ) || '';
-  
+
+    const username =
+      Object.keys(referenceData.users).find(
+        (key) => referenceData.users[key].name === userData.name
+      ) || "";
+
     newSelectedApprovers[i] = {
       username,
       name: userData.name,
       position: userData.position,
-      represent: '',
+      represent: "",
     };
     setSelectedApprovers(newSelectedApprovers);
   };
@@ -132,8 +176,7 @@ export default function NewDocForm({ inspectType }: { inspectType: InspectType }
         );
       });
 
-    fetchWithToken(SE.API_INSPECTDOC, 
-      {
+    fetchWithToken(SE.API_INSPECTDOC, {
       method: "POST",
       body: JSON.stringify({
         type: {
@@ -153,21 +196,20 @@ export default function NewDocForm({ inspectType }: { inspectType: InspectType }
         workstation: workstations.map((ws) => ws.value),
         flycam: flycams.map((fc) => fc.value),
       }),
-    }
-  )
+    })
       .then((data) => {
         if (data.message) toast.success(data.message);
         router.push(Nav.INSPECTDOC_PAGE);
       })
       .catch((e: Error) => {
-        if(e.message) toast.error(e.message);
+        if (e.message) toast.error(e.message);
       });
   }
 
   useEffect(() => {
-    if(menubar("inspectdoc")) {
+    if (menubar("inspectdoc")) {
       setUserWright(UserWright.Write);
-    } else if(menubar("inspectdoc-view")) {
+    } else if (menubar("inspectdoc-view")) {
       setUserWright(UserWright.Read);
     } else {
       setUserWright(UserWright.None);
@@ -176,7 +218,7 @@ export default function NewDocForm({ inspectType }: { inspectType: InspectType }
     fetchReferenceData()
       .then((response) => setReferenceData(response))
       .catch((e: Error) => {
-        if(e.message) toast.error(e.message);
+        if (e.message) toast.error(e.message);
       });
   }, []);
 
@@ -192,16 +234,18 @@ export default function NewDocForm({ inspectType }: { inspectType: InspectType }
     }
   }, [route]);
 
-  if (!userWright) return null
-  if (userWright === UserWright.None || userWright === UserWright.Read) return <UserDontAccessPage />
-  if (!referenceData) return null
+  if (!userWright) return null;
+  if (userWright === UserWright.None || userWright === UserWright.Read)
+    return <UserDontAccessPage />;
+  if (!referenceData) return null;
 
   return (
     <div className="flex flex-1 relative items-center justify-center">
       <Card className="w-full max-w-3xl">
         <CardHeader>
           <CardTitle className="text-center text-3xl">
-            Tạo phiếu kiểm tra {
+            Tạo phiếu kiểm tra{" "}
+            {
               {
                 [InspectType.Day]: "ngày",
                 [InspectType.Night]: "đêm",
@@ -210,35 +254,41 @@ export default function NewDocForm({ inspectType }: { inspectType: InspectType }
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={(e) => { e.preventDefault(); create(new FormData(e.target as HTMLFormElement)) }}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              create(new FormData(e.target as HTMLFormElement));
+            }}
+          >
             <div className="grid gap-4 lg:grid-cols-3">
               <div className="space-y-2">
                 <Label htmlFor="powerline">
                   <span className="text-destructive mr-1">*</span>
                   Tuyến
                 </Label>
-                <Select
+                <Select1
                   name="powerline"
-                  onValueChange={(value) => {
-                    setRoute({
-                      id: value,
-                      value: value,
-                      label: referenceData.powerlines[value]
-                    });
-                    setEpower(null);
-                    setSpower(null);
+                  options={Object.entries(referenceData.powerlines).map(
+                    ([powerlineId, powerlineData]) => ({
+                      value: powerlineId,
+                      label: powerlineData,
+                    })
+                  )}
+                  onChange={(selectedOption) => {
+                    if (selectedOption) {
+                      setRoute({
+                        id: selectedOption.value,
+                        value: selectedOption.value,
+                        label: selectedOption.label,
+                      });
+                      setEpower(null);
+                      setSpower(null);
+                    }
                   }}
-                  value={route?.id || ''}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Chọn tuyến" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(referenceData.powerlines).map(([powerlineId, powerlineData]) => (
-                      <SelectItem key={powerlineId} value={powerlineId}>{powerlineData}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  value={route ? { value: route.id, label: route.label } : null}
+                  placeholder="Chọn tuyến"
+                  isSearchable
+                />
               </div>
 
               <div className="space-y-2">
@@ -246,21 +296,25 @@ export default function NewDocForm({ inspectType }: { inspectType: InspectType }
                   <span className="text-destructive mr-1">*</span>
                   Từ cột
                 </Label>
-                <Select 
-                  name="powerPoleFrom"
-                  onValueChange={(value) => setSpower({ value, label: powerPoles[value] })} 
-                  disabled={Object.keys(powerPoles).length === 0}
-                  value={spower?.value || ''}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Chọn cột" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(powerPoles).map(([powerPoleId, powerPoleName]) => (
-                      <SelectItem key={powerPoleId} value={powerPoleId}>{powerPoleName}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                {Object.keys(powerPoles).length > 0 ? (
+                  <Select1
+                    name="powerPoleFrom"
+                    options={Object.entries(powerPoles).map(
+                      ([powerPoleId, powerPoleName]) => ({
+                        value: powerPoleId,
+                        label: powerPoleName,
+                      })
+                    )}
+                    value={spower}
+                    onChange={(sl) => setSpower(sl)}
+                  />
+                ) : (
+                  <Select1
+                    name="powerPoleFrom"
+                    options={[{ value: "", label: "---- Chọn cột ----" }]}
+                    isDisabled={true}
+                  />
+                )}
               </div>
 
               <div className="space-y-2">
@@ -268,21 +322,25 @@ export default function NewDocForm({ inspectType }: { inspectType: InspectType }
                   <span className="text-destructive mr-1">*</span>
                   Đến cột
                 </Label>
-                <Select 
-                  name="powerPoleTo"
-                  onValueChange={(value) => setEpower({ value, label: powerPoles[value] })} 
-                  disabled={Object.keys(powerPoles).length === 0}
-                  value={epower?.value || ''}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Chọn cột" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(powerPoles).map(([powerPoleId, powerPoleName]) => (
-                      <SelectItem key={powerPoleId} value={powerPoleId}>{powerPoleName}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                {Object.keys(powerPoles).length > 0 ? (
+                  <Select1
+                    name="powerPoleTo"
+                    options={Object.entries(powerPoles).map(
+                      ([powerPoleId, powerPoleName]) => ({
+                        value: powerPoleId,
+                        label: powerPoleName,
+                      })
+                    )}
+                    value={epower}
+                    onChange={(sl) => setEpower(sl)}
+                  />
+                ) : (
+                  <Select1
+                    name="powerPoleTo"
+                    options={[{ value: "", label: "---- Chọn cột ----" }]}
+                    isDisabled={true}
+                  />
+                )}
               </div>
             </div>
 
@@ -302,15 +360,18 @@ export default function NewDocForm({ inspectType }: { inspectType: InspectType }
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="inspectMethod" className="text-sm font-medium block">
+                <Label
+                  htmlFor="inspectMethod"
+                  className="text-sm font-medium block"
+                >
                   <span className="text-destructive mr-1">*</span>
                   Phương thức kiểm tra
                 </Label>
-                <Input 
-                  id="inspectMethod" 
-                  name="inspectMethod" 
-                  className="w-full h-10" 
-                  placeholder="Nhập phương thức kiểm tra" 
+                <Input
+                  id="inspectMethod"
+                  name="inspectMethod"
+                  className="w-full h-10"
+                  placeholder="Nhập phương thức kiểm tra"
                 />
               </div>
             </div>
@@ -334,19 +395,34 @@ export default function NewDocForm({ inspectType }: { inspectType: InspectType }
                   {_.times(5, (i) => (
                     <TableRow key={i}>
                       <TableCell>
-                        <Select onValueChange={(value) => handleWorkerChange(i, { value, label: referenceData.users[value].name, userData: referenceData.users[value] })}>
+                        <Select
+                          onValueChange={(value) =>
+                            handleWorkerChange(i, {
+                              value,
+                              label: referenceData.users[value].name,
+                              userData: referenceData.users[value],
+                            })
+                          }
+                        >
                           <SelectTrigger>
                             <SelectValue placeholder="Chọn nhân viên" />
                           </SelectTrigger>
                           <SelectContent>
-                            {Object.entries(referenceData.users).map(([userId, userData]) => (
-                              <SelectItem key={userId} value={userId}>{`${userData.name} (${userData.usercode})`}</SelectItem>
-                            ))}
+                            {Object.entries(referenceData.users).map(
+                              ([userId, userData]) => (
+                                <SelectItem
+                                  key={userId}
+                                  value={userId}
+                                >{`${userData.name} (${userData.usercode})`}</SelectItem>
+                              )
+                            )}
                           </SelectContent>
                         </Select>
                       </TableCell>
                       <TableCell>{selectedWorkers[i]?.name || ""}</TableCell>
-                      <TableCell>{selectedWorkers[i]?.position || ""}</TableCell>
+                      <TableCell>
+                        {selectedWorkers[i]?.position || ""}
+                      </TableCell>
                       <TableCell>{selectedWorkers[i]?.lv_work}</TableCell>
                       <TableCell>{selectedWorkers[i]?.lv_safe}</TableCell>
                     </TableRow>
@@ -373,7 +449,9 @@ export default function NewDocForm({ inspectType }: { inspectType: InspectType }
                           label: workstationName,
                         })
                       )}
-                      onChange={(workstations) => setWorkstations([...workstations])}
+                      onChange={(workstations) =>
+                        setWorkstations([...workstations])
+                      }
                       placeholder="Chọn máy trạm"
                     />
                   </div>
@@ -416,49 +494,57 @@ export default function NewDocForm({ inspectType }: { inspectType: InspectType }
                     {_.times(3, (i) => (
                       <TableRow key={i}>
                         <TableCell>
-                        <Select
-                          onValueChange={(value) => {
-                            const userData = referenceData.users[value];
-                            handleApproverChange(i, { 
-                              value, 
-                              label: `${userData.name} (${userData.usercode})`,
-                              userData: {
-                                phone: userData.phone,
-                                name: userData.name,
-                                lv_work: userData.lv_work,
-                                position: userData.position || '',
-                                usercode: userData.usercode,
-                                department: userData.department,
-                                lv_safe: userData.lv_safe
-                              }
-                            });
-                          }}
-                          value={selectedApprovers[i]?.username || ''}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Chọn người ký duyệt" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {Object.entries(referenceData.users).map(([userId, userData]) => (
-                              <SelectItem key={userId} value={userId}>
-                                {`${userData.name} (${userData.usercode})`}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                          <Select
+                            onValueChange={(value) => {
+                              const userData = referenceData.users[value];
+                              handleApproverChange(i, {
+                                value,
+                                label: `${userData.name} (${userData.usercode})`,
+                                userData: {
+                                  phone: userData.phone,
+                                  name: userData.name,
+                                  lv_work: userData.lv_work,
+                                  position: userData.position || "",
+                                  usercode: userData.usercode,
+                                  department: userData.department,
+                                  lv_safe: userData.lv_safe,
+                                },
+                              });
+                            }}
+                            value={selectedApprovers[i]?.username || ""}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Chọn người ký duyệt" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {Object.entries(referenceData.users).map(
+                                ([userId, userData]) => (
+                                  <SelectItem key={userId} value={userId}>
+                                    {`${userData.name} (${userData.usercode})`}
+                                  </SelectItem>
+                                )
+                              )}
+                            </SelectContent>
+                          </Select>
                         </TableCell>
-                        <TableCell>{selectedApprovers[i]?.name || ""}</TableCell>
-                        <TableCell>{selectedApprovers[i]?.position || ""}</TableCell>
+                        <TableCell>
+                          {selectedApprovers[i]?.name || ""}
+                        </TableCell>
+                        <TableCell>
+                          {selectedApprovers[i]?.position || ""}
+                        </TableCell>
                         <TableCell>
                           <Select
                             onValueChange={(value) => {
-                              const newSelectedApprovers = [...selectedApprovers];
+                              const newSelectedApprovers = [
+                                ...selectedApprovers,
+                              ];
                               if (newSelectedApprovers[i]) {
                                 newSelectedApprovers[i].represent = value;
                                 setSelectedApprovers(newSelectedApprovers);
                               }
                             }}
-                            value={selectedApprovers[i]?.represent || ''}
+                            value={selectedApprovers[i]?.represent || ""}
                           >
                             <SelectTrigger>
                               <SelectValue placeholder="Chọn vị trí" />
@@ -480,7 +566,9 @@ export default function NewDocForm({ inspectType }: { inspectType: InspectType }
             </Card>
 
             <div className="flex justify-between mt-6">
-              <Button type="submit" className="flex-1">Tạo phiếu</Button>
+              <Button type="submit" className="flex-1">
+                Tạo phiếu
+              </Button>
               <Button variant="destructive" asChild>
                 <Link href={Nav.INSPECTDOC_PAGE}>Quay lại</Link>
               </Button>
@@ -489,5 +577,5 @@ export default function NewDocForm({ inspectType }: { inspectType: InspectType }
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

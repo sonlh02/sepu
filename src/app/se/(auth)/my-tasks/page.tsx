@@ -105,7 +105,7 @@ export default function MyTasks() {
     <ScrollArea className="h-[calc(100vh-200px)]">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
         {docs.map((data) => (
-          <Card key={data.id} className="overflow-hidden">
+          <Card key={data.id} className="overflow-hidden border-none">
             <CardContent className="p-0">
               {type === 'inspect' ? (
                 <InspectSheet
@@ -138,10 +138,10 @@ export default function MyTasks() {
       <Tablist active="index" />
       <div className="flex-1 p-4 space-y-4">
         <Tabs defaultValue="inspect" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          {/* <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="inspect">Phiếu kiểm tra</TabsTrigger>
             <TabsTrigger value="repair">Phiếu sửa chữa</TabsTrigger>
-          </TabsList>
+          </TabsList> */}
           <TabsContent value="inspect">
             <Card>
               <CardHeader>
@@ -179,7 +179,7 @@ export default function MyTasks() {
               </CardContent>
             </Card>
           </TabsContent>
-          <TabsContent value="repair">
+          {/* <TabsContent value="repair">
             <Card>
               <CardHeader>
                 <CardTitle>Phiếu sửa chữa</CardTitle>
@@ -215,7 +215,7 @@ export default function MyTasks() {
                 </Tabs>
               </CardContent>
             </Card>
-          </TabsContent>
+          </TabsContent> */}
         </Tabs>
       </div>
     </div>

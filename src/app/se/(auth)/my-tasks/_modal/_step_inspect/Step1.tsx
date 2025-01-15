@@ -7,7 +7,7 @@ import { InspectData } from "../../doc_data"
 
 export function VStep1({ className, inspectData }: { className?: string; inspectData: InspectData }) {
   return (
-    <Card className={`${className || ""}`}>
+    <Card className={`border-none ${className || ""}`}>
       <CardContent className="space-y-6">
         <div className="grid gap-4 md:grid-cols-3">
           <div className="space-y-2">
