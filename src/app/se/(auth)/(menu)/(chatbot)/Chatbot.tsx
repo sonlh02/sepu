@@ -230,57 +230,6 @@ const ChatBot: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-gray-100 rounded-lg border border-gray-200">
-                  <div className="p-4">
-                    <h3 className="font-semibold mb-2">
-                      Bạn cần quản lý phiếu sửa chữa?
-                    </h3>
-                  </div>
-                  <div className="border-t border-b border-gray-200">
-                    <Button
-                      variant="ghost"
-                      className="w-full p-4 h-auto bg-gray-100 hover:bg-gray-200 space-y-2 text-left flex flex-col items-start"
-                      onClick={() => {
-                        console.log("Pricing clicked");
-                      }}
-                    >
-                      <Link href={`${Nav.REPAIRDOC_PAGE}`} target="_blank">
-                        <h3 className="font-medium">Quản lý phiếu sửa chữa</h3>
-                        <p className="text-sm text-gray-600 font-normal mt-2">
-                          Chuyển đến trang quản lý phiếu sửa chữa
-                        </p>
-                      </Link>
-                    </Button>
-                  </div>
-                  <div className="p-4">
-                    <Button
-                      className="w-full text-white hover:bg-stone-500"
-                    >
-                      <Link href={Nav.REPAIRDOC_NEW_PAGE} target="_blank">
-                        Tạo phiếu sửa chữa
-                      </Link>
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="bg-gray-100 rounded-lg border border-gray-200">
-                  <div className="border-t border-b border-gray-200">
-                    <Button
-                      variant="ghost"
-                      className="w-full p-4 h-auto bg-gray-100 hover:bg-gray-200 space-y-2 text-left flex flex-col items-start"
-                      onClick={() => {
-                        console.log("Pricing clicked");
-                      }}
-                    >
-                      <Link href={`${Nav.STATISTIC_PAGE}`} target="_blank">
-                        <p className="font-normal">
-                          Bạn muốn xem thống kê công việc?
-                        </p>
-                      </Link>
-                    </Button>
-                  </div>
-                </div>
-
                 {messages.map((msg, index) => (
                   <div
                     key={index}

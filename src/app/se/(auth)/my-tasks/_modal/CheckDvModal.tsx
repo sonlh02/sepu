@@ -174,8 +174,8 @@ export default function CheckDvInspectModal({
               UAV ({inspectData.flycams.length})
             </TabsTrigger>
           </TabsList>
-          <div className="flex-grow overflow-hidden">
-            <ScrollArea className="h-full" style={{ maxHeight: "400px" }}>
+          <div className="flex-grow">
+            <ScrollArea className="h-full">
               <TabsContent value="workstation" className="mt-0 h-full">
                 {inspectData.workstations.map((ws) =>
                   renderEquipmentCard(ws, "workstation")
