@@ -308,10 +308,10 @@ export default function MapSupervise({
         ))}
         
         {/* Draw fly logs */}
-        <Polyline pathOptions={{ color: "#2a5fac" }} positions={Object.values(uavLogs).map((uavLog) => uavLog.coordinates)} />
+        <Polyline pathOptions={{ color: "#8bc34a" }} positions={Object.values(uavLogs).map((uavLog) => uavLog.coordinates)} />
 
         {/* Draw line */}
-        <Polyline pathOptions={{ color: "#8bc34a" }} positions={uavLines} />
+        <Polyline pathOptions={{ color: "#c1b116" }} positions={uavLines} />
 
         {/* Draw warning */}
         {warning && Object.values(warning).map((w, i) => (

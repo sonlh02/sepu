@@ -253,18 +253,18 @@ export default function Statistics() {
                 },
               ],
             },
-            {
-              labels: label,
-              datasets: [
-                {
-                  label: "Số lần sửa chữa",
-                  data: sortDataByLabel(value.repair_docs, label),
-                  backgroundColor: "rgba(54, 162, 235, 0.2)",
-                  borderColor: "rgba(54, 162, 235, 1)",
-                  borderWidth: 1,
-                },
-              ],
-            },
+            // {
+            //   labels: label,
+            //   datasets: [
+            //     {
+            //       label: "Số lần sửa chữa",
+            //       data: sortDataByLabel(value.repair_docs, label),
+            //       backgroundColor: "rgba(54, 162, 235, 0.2)",
+            //       borderColor: "rgba(54, 162, 235, 1)",
+            //       borderWidth: 1,
+            //     },
+            //   ],
+            // },
             {
               labels: label,
               datasets: [
@@ -353,7 +353,7 @@ export default function Statistics() {
                 </SelectContent>
               </Select>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {barChartData.map((chartData, index) => (
                 <Card key={index}>
                   <CardContent className="pt-6">
@@ -464,12 +464,12 @@ export default function Statistics() {
             </div>
 
           {statType === "year" && (
-              <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {[
                 { title: "Số lần kiểm tra", value: statisticYear?.times_inspect || 0 },
-                { title: "Số lần sửa chữa", value: statisticYear?.times_repair || 0 },
+                // { title: "Số lần sửa chữa", value: statisticYear?.times_repair || 0 },
                 { title: "Số tuyến kiểm tra", value: statisticYear?.num_inspect_route || 0 },
-                { title: "Số tuyến sửa chữa", value: statisticYear?.num_repair_route || 0 },
+                //{ title: "Số tuyến sửa chữa", value: statisticYear?.num_repair_route || 0 },
                 { title: "Số lỗi phát hiện khi bay", value: statisticYear?.num_incident_fly || 0 },
                 { title: "Số lỗi camera phát hiện", value: statisticYear?.num_incident_cam || 0 },
                 { title: "Tuyến gặp nhiều lỗi (phát hiện khi bay)", value: statisticYear?.route_max_incident_fly || "-" },
@@ -488,12 +488,12 @@ export default function Statistics() {
           )}
 
           {statType === "month" && (
-            <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
               { title: "Số lần kiểm tra", value: statisticMonth?.times_inspect || 0 },
-              { title: "Số lần sửa chữa", value: statisticMonth?.times_repair || 0 },
+              //{ title: "Số lần sửa chữa", value: statisticMonth?.times_repair || 0 },
               { title: "Số tuyến kiểm tra", value: statisticMonth?.num_inspect_route || 0 },
-              { title: "Số tuyến sửa chữa", value: statisticMonth?.num_repair_route || 0 },
+              //{ title: "Số tuyến sửa chữa", value: statisticMonth?.num_repair_route || 0 },
               { title: "Số lỗi phát hiện khi bay", value: statisticMonth?.num_incident_fly || 0 },
               { title: "Số lỗi camera phát hiện", value: statisticMonth?.num_incident_cam || 0 },
               { title: "Tuyến gặp nhiều lỗi (phát hiện khi bay)", value: statisticMonth?.route_max_incident_fly || "-" },
@@ -512,12 +512,12 @@ export default function Statistics() {
           )}
 
           {statType === "day" && (
-            <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
               { title: "Số lần kiểm tra", value: statisticDay?.times_inspect || 0 },
-              { title: "Số lần sửa chữa", value: statisticDay?.times_repair || 0 },
+              //{ title: "Số lần sửa chữa", value: statisticDay?.times_repair || 0 },
               { title: "Số tuyến kiểm tra", value: statisticDay?.num_inspect_route || 0 },
-              { title: "Số tuyến sửa chữa", value: statisticDay?.num_repair_route || 0 },
+              //{ title: "Số tuyến sửa chữa", value: statisticDay?.num_repair_route || 0 },
               { title: "Số lỗi phát hiện khi bay", value: statisticDay?.num_incident_fly || 0 },
               { title: "Số lỗi camera phát hiện", value: statisticDay?.num_incident_cam || 0 },
               { title: "Tuyến gặp nhiều lỗi (phát hiện khi bay)", value: statisticDay?.route_max_incident_fly || "-" },
