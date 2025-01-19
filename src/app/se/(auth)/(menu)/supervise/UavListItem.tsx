@@ -38,6 +38,8 @@ export default function UavListItem({
   focusRoute: Function,
   focusUav: Function;
 }) {
+  // Thêm console.log ở đây để kiểm tra dữ liệu flyDevices
+  console.log("Fly Devices:", docData.flyDevices);
   return (
     <Accordion type="single" collapsible defaultValue={index === 0 ? `item-${index}` : undefined}>
       <AccordionItem value={`item-${index}`} className="mb-4 border rounded bg-muted">

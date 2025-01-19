@@ -34,8 +34,6 @@ type InspectsRawData = {
       powerFrom: string;
       powerTo: string;
       methodInspect: string;
-      workstation: string;
-      flycam: string;
       status: 1 | 2 | 3;
       inspectTeams: Array<{
         id: number;
@@ -52,6 +50,24 @@ type InspectsRawData = {
         name: string;
         position: string;
         confirm: boolean;
+      }>;
+      inspectWorkstations: Array<{
+        id: number;
+        workstation: {
+          id: number;
+          name: string;
+          code: string;
+          activity: boolean;
+        };
+      }>;
+      inspectFlycams: Array<{
+        id: number;
+        flycam: {
+          id: number;
+          name: string;
+          code: string;
+          activity: boolean;
+        };
       }>;
       inspectImages: Array<{
         id: number;
@@ -106,8 +122,8 @@ export async function fetchDocuments(seek: any): Promise<{
         },
         date: new Date(docRawData.dateInspect),
         workers: docRawData.inspectTeams.map((workerRaw) => workerRaw.name),
-        workstations: docRawData.workstation,
-        flyDevices: docRawData.flycam?.split(",") || [],
+        workstations: docRawData.inspectWorkstations.map((ws) => ws.workstation.code).join(","),
+        flyDevices: docRawData.inspectFlycams.map((uav) => uav.flycam.code),
       })
   );
 
